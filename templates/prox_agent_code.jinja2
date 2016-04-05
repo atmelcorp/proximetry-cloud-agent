@@ -1,0 +1,7 @@
+{% macro prox_instance() %}{{middleware.user_label}}{% endmacro %}
+{% macro our(thing) %}{{ middleware.user_label | upper }}_{{ thing }}{% endmacro %}
+{% macro desc_ptr() %}{{ our('desc_ptr') }}{% endmacro %}
+
+
+{% macro includes() %}
+{% endmacro %}

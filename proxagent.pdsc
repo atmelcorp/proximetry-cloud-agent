@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package schemaVersion="1.3" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="PACK.xsd">
+<name>Proximetry_Agent</name>
+<vendor>Proximetry</vendor>
+<description>This is the Proximetry Cloud Agent pack</description>
+<url>http://www.atmel.com</url>
+<releases>
+    <release version="1.0.0">The first release.</release>
+</releases>
+
+
+<conditions>
+	<condition id="Proximetry support">
+		<require Dfamily="SAMD21"/>
+	</condition>
+</conditions>
+
+<components>
+    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+        <description>This is the Proximetry Agent Component</description>
+        <files>
+			<file category="include" name="prox_agent/agent_sdk-amp-c/"/>
+			<file category="library" name="prox_agent/agent_sdk-amp-c/libampagent.a"/>
+            <file category="header"  name="prox_agent/agent_sdk-amp-c/amp_agent.h"/>
+			<file category="include" name="prox_agent/"/>
+			<file category="source" name="prox_agent/prox_agent_amp.c"/>
+			<file category="header" name="prox_agent/prox_agent_amp.h"/>
+			<file category="header" name="prox_agent/prox_agent_config.h"/>
+            <file category="doc" name="documentation/prox_agent.rst"/>
+        </files>
+    </component>
+
+	<component Cclass="Application" Cgroup="Proximetry Cloud Agent" Cversion="0.0.1">
+		<description> Proximetry Cloud Agent Example </description>
+		<files>
+			<file category="source" name="applications/prox_agent_simple_example/main.c"/>
+			<file category="header" name="applications/prox_agent_simple_example/main.h" attr="config"/>
+			<file category="source" name="applications/prox_agent_simple_example/prox_agent.c"/>
+			<file category="header" name="applications/prox_agent_simple_example/prox_agent.h"/>
+			<file category="source" name="applications/prox_agent_simple_example/prox_agent_helper.c"/>
+			<file category="header" name="applications/prox_agent_simple_example/prox_agent_helper.h"/>
+			<file category="source" name="applications/prox_agent_simple_example/prox_agent_common.c"/>
+			<file category="header" name="applications/prox_agent_simple_example/prox_agent_common.h"/>
+			<file category="source" name="applications/prox_agent_simple_example/socket_layer.c"/>
+			<file category="header" name="applications/prox_agent_simple_example/socket_layer.h"/>
+			<file category="doc" 	name="documentation/prox_agent_example.rst"/>
+		</files>
+	</component>
+
+</components>
+	<examples>
+		<example name="prox_example_agent_d21" folder="applications/prox_agent_simple_example/samd21xpro" doc="Abstract.txt" version="1.0">
+				<description>Proximetry Cloud Agent Example</description>
+				<board vendor="Atmel" name="SAMD21XplainedPro"/>
+				<project>
+					<environment name="gcc" load="Makefile" />
+					<environment name="atmel_start" load="applications/prox_agent_simple_example/samd21xpro/prox_cloud_agent_example.yaml"/>
+				</project>
+				<attributes>
+					<component Cclass="Application" Cgroup="Proximetry Cloud Agent"/>
+					<category>Getting started</category>
+				</attributes>
+		</example>
+
+		<example name="prox_example_agent_w25" folder="applications/prox_agent_simple_example/samw25xpro" doc="Abstract.txt" version="1.0">
+				<description>Proximetry Cloud Agent Example</description>
+				<board vendor="Atmel" name="SAMW25XplainedPro"/>
+				<project>
+					<environment name="gcc" load="Makefile" />
+					<environment name="atmel_start" load="applications/prox_agent_simple_example/samw25xpro/prox_cloud_agent_example.yaml"/>
+				</project>
+				<attributes>
+					<component Cclass="Application" Cgroup="Proximetry Cloud Agent"/>
+					<category>Getting started</category>
+				</attributes>
+		</example>
+	</examples>
+
+
+</package>
