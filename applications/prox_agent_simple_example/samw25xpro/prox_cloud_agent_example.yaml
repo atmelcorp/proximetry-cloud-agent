@@ -6,20 +6,24 @@ board:
 details: null
 application:
   definition: 'Proximetry:Proximetry_Agent:1.0.0::Application:Proximetry_Cloud_Agent:'
-  configuration: null
+  configuration:
+    def_password: Password
+    def_sec_type: WPA/WPA2 personal(PSK)
+    def_ssid: SSID
 middlewares:
   AT30TSE75X:
     user_label: AT30TSE75X
     configuration:
       conf_resolution: 11-bits
-    definition: Atmel:Temperature_Sensor:0.0.1::AT30TSE75X
+    definition: Atmel:Generic_Temperature_Sensor:0.0.1::AT30TSE75X
     functionality: Temperature_Sensor
     api: Sensor:Temperature-Sensor:AT30TSE75X
     dependencies:
       I2C instance: I2C
   WIFI_0:
     user_label: WIFI_0
-    configuration: {}
+    configuration:
+      wifi_mgmt_enable: false
     definition: Atmel:WIFI_WINC1500:1.0.0::WINC1500_Driver
     functionality: WiFi
     api: WIFI:WINC:WINC1500
@@ -283,7 +287,13 @@ drivers:
       eic_arch_wakeupen7: false
       eic_arch_wakeupen8: false
       eic_arch_wakeupen9: false
-    optional_signals: []
+    optional_signals:
+    - pad: PB09
+      mode: Enabled
+      configuration: null
+      definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::optional_signal_definition::EIC.EXTINT.9
+      name: EIC/EXTINT/9
+      label: EXTINT/9
     variant: null
     clocks:
       domain_group:
@@ -536,72 +546,92 @@ drivers:
     clocks:
       domain_group: null
 pads:
-  PB08:
+  CONF_WINC_WAKE_PIN:
+    name: PB08
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PB08
     mode: Digital output
     user_label: CONF_WINC_WAKE_PIN
     configuration: null
+  CONF_WINC_EXT_INT_PIN:
+    name: PB09
+    definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PB09
+    mode: Digital input
+    user_label: CONF_WINC_EXT_INT_PIN
+    configuration: null
   PA05:
+    name: PA05
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA05
     mode: Digital output
     user_label: PA05
     configuration: null
   PA08:
+    name: PA08
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA08
     mode: Digital output
     user_label: PA08
     configuration: null
   PA09:
+    name: PA09
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA09
     mode: Advanced
     user_label: PA09
     configuration: null
   PB10:
+    name: PB10
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PB10
     mode: Peripheral IO
     user_label: PB10
     configuration: null
   PB11:
+    name: PB11
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PB11
     mode: Peripheral IO
     user_label: PB11
     configuration: null
-  PA12:
+  CONF_WINC_SPI_MOSI:
+    name: PA12
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA12
     mode: Digital output
     user_label: CONF_WINC_SPI_MOSI
     configuration: null
-  PA13:
+  CONF_WINC_SPI_SCK:
+    name: PA13
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA13
     mode: Digital output
     user_label: CONF_WINC_SPI_SCK
     configuration: null
-  PA14:
+  CONF_WINC_SPI_CS_PIN:
+    name: PA14
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA14
     mode: Digital output
     user_label: CONF_WINC_SPI_CS_PIN
     configuration: null
-  PA15:
+  CONF_WINC_SPI_MISO:
+    name: PA15
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA15
     mode: Digital input
     user_label: CONF_WINC_SPI_MISO
     configuration: null
-  PA23:
+  LED0:
+    name: PA23
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA23
     mode: Digital output
     user_label: LED0
     configuration: null
-  PB23:
+  SW0:
+    name: PB23
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PB23
     mode: Digital input
     user_label: SW0
     configuration: null
-  PA27:
+  CONF_WINC_PIN_RESET:
+    name: PA27
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA27
     mode: Digital output
     user_label: CONF_WINC_PIN_RESET
     configuration: null
-  PA28:
+  CONF_WINC_PIN_CHIP_ENABLE:
+    name: PA28
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PA28
     mode: Digital output
     user_label: CONF_WINC_PIN_CHIP_ENABLE
