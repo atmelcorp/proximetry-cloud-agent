@@ -33,7 +33,7 @@
  *
  * \return Time stamp in ms.
  */
-uint64_t dev_now(void);
+uint64_t time_ms(void);
 
 /**
  * \brief Callback to get the Wi-Fi status update.

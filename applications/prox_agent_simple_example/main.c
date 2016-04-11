@@ -10,13 +10,10 @@
 
 #include "driver/include/m2m_wifi.h"
 #include "prox_agent.h"
-#include "at30tse75x.h"
-#include "main.h"
 #include <temperature_sensor_main.h>
+#include "main.h"
 
 #define CONNECTION_TIMEOUT   	10000  						//[ms] - timeout for wifi [re]connection
-
-#include "prox_agent_helper.h"
 
 #define APP_VER "0.1.0"
 #define STRING_HEADER EOL EOL "Start Proximetry Agent Simple Example " APP_VER " --" EOL \
@@ -36,7 +33,7 @@ static int32_t led0_blinking_freq = 1;
 static bool led0 = true;
 
 /**
- * \brief Callback to get the Wi-Fi status update.
+ * \brief funtion to get the Wi-Fi status update.
  */
 const char *get_ip_str(void)
 {
@@ -85,7 +82,6 @@ static void wifi_cb(uint8 u8MsgType, void *pvMsg)
 			printf("Wi-Fi IP is %s\r\n",wifi_ip_str);
 			gbConnectedWifi = true;
 			prox_init_udp_socket();
-			prox_agent_update_network_param();
 			break;
 		}
 
@@ -117,7 +113,7 @@ static void wifi_cb(uint8 u8MsgType, void *pvMsg)
 /**
  * \brief function gives time stamp
  */
-uint64_t dev_now(void)
+uint64_t time_ms(void)
 {
 	return timer_1ms;
 }
@@ -201,16 +197,20 @@ void led0_service(void)
 	if (false == led0){ 				/* led0 off */
 		gpio_set_pin_level(LED0,1);
 	}else{ 								/* led0 on */
-		if (next_blink < dev_now()){
-			/* positive freq */
-			if (led0_blinking_freq > 0)
-				next_blink = dev_now() + (1000/led0_blinking_freq)/2;
-			/* negative freq */
-			else if (led0_blinking_freq < 0)
-				next_blink = dev_now() + (-led0_blinking_freq) * 1000/2;
+		if (led0_blinking_freq == 0){
+			gpio_set_pin_level(LED0,0);
+		}else{							 /* blinking */
+			if (next_blink < time_ms()){
+				/* positive freq */
+				if (led0_blinking_freq > 0)
+					next_blink = time_ms() + (1000/led0_blinking_freq)/2;
+				/* negative freq */
+				else if (led0_blinking_freq < 0)
+					next_blink = time_ms() + (-led0_blinking_freq) * 1000/2;
 
-			gpio_toggle_pin_level(LED0);
-		}
+				gpio_toggle_pin_level(LED0);
+			}
+	    }
 	}
 }
 
@@ -257,11 +257,11 @@ int8_t wifi_get_rssi_blk(void)
 int main(void)
 {
 	system_init();
-
 	STDIO_REDIRECT_0_init();
     TIMER_0_init();
-	adc_sync_enable(&IO1_LIGHT_SEN_ADC_0);
+
 	temperature_sensors_init();
+	adc_sync_enable(&IO1_LIGHT_SEN_ADC_0);
 
 	printf(STRING_HEADER);
 
@@ -273,7 +273,8 @@ int main(void)
 	/* Initialize Socket module */
 	winc1500_socket_layer_init();
 
-	prox_cloud_agent_init();
+	/* prox_agent_init(); */
+	bool prox_agent_inited = false;
 
 	while(1) {
 
@@ -281,14 +282,21 @@ int main(void)
 
 		if (gbConnectedWifi)
 		{
-				prox_cloud_agent_thread_nb();
+			/* placed here because of an generalization of example and reporing */
+            /* the ip address, to cloud service, as one of an agent parameter */
+			if(!prox_agent_inited)
+			{
+				prox_agent_init();
+				prox_agent_inited = true;
+			}
+			prox_agent_thread_nb();
 		}
 		else
 		{
 			/* [Re]connect to wifi */
-			if (connect_timer < dev_now())
+			if (connect_timer < time_ms())
 			{
-				connect_timer = dev_now() + CONNECTION_TIMEOUT;
+				connect_timer = time_ms() + CONNECTION_TIMEOUT;
 				connect_wifi();
 			}
 		}

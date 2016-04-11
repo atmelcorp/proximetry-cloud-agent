@@ -21,24 +21,22 @@
         <files>
 			<file category="include" name="prox_agent/agent_sdk-amp-c/"/>
 			<file category="library" name="prox_agent/agent_sdk-amp-c/libampagent.a"/>
-            <file category="header"  name="prox_agent/agent_sdk-amp-c/amp_agent.h"/>
+			<file category="header"  name="prox_agent/agent_sdk-amp-c/amp_agent.h"/>
 			<file category="include" name="prox_agent/"/>
-			<file category="source" name="prox_agent/prox_agent_amp.c"/>
-			<file category="header" name="prox_agent/prox_agent_amp.h"/>
 			<file category="header" name="prox_agent/prox_agent_config.h"/>
             <file category="doc" name="documentation/prox_agent.rst"/>
         </files>
     </component>
 
-	<component Cclass="Application" Cgroup="Proximetry Cloud Agent" Cversion="0.0.1">
+	<component Cclass="Application" Cgroup="Atmel Cloud Proximetry Example" Cversion="0.0.1">
 		<description> Proximetry Cloud Agent Example </description>
 		<files>
 			<file category="source" name="applications/prox_agent_simple_example/main.c"/>
 			<file category="header" name="applications/prox_agent_simple_example/main.h" attr="config"/>
 			<file category="source" name="applications/prox_agent_simple_example/prox_agent.c"/>
 			<file category="header" name="applications/prox_agent_simple_example/prox_agent.h"/>
-			<file category="source" name="applications/prox_agent_simple_example/prox_agent_helper.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/prox_agent_helper.h"/>
+			<file category="source" name="applications/prox_agent_simple_example/prox_agent_amp.c"/>
+			<file category="header" name="applications/prox_agent_simple_example/prox_agent_amp.h"/>
 			<file category="source" name="applications/prox_agent_simple_example/prox_agent_common.c"/>
 			<file category="header" name="applications/prox_agent_simple_example/prox_agent_common.h"/>
 			<file category="source" name="applications/prox_agent_simple_example/socket_layer.c"/>
@@ -57,7 +55,7 @@
 					<environment name="atmel_start" load="applications/prox_agent_simple_example/samd21xpro/prox_cloud_agent_example.yaml"/>
 				</project>
 				<attributes>
-					<component Cclass="Application" Cgroup="Proximetry Cloud Agent"/>
+					<component Cclass="Application" Cgroup="Atmel Cloud Proximetry Example"/>
 					<category>Getting started</category>
 				</attributes>
 		</example>
@@ -70,7 +68,7 @@
 					<environment name="atmel_start" load="applications/prox_agent_simple_example/samw25xpro/prox_cloud_agent_example.yaml"/>
 				</project>
 				<attributes>
-					<component Cclass="Application" Cgroup="Proximetry Cloud Agent"/>
+					<component Cclass="Application" Cgroup="Atmel Cloud Proximetry Example"/>
 					<category>Getting started</category>
 				</attributes>
 		</example>

@@ -5,7 +5,7 @@ board:
   device: SAMD21J18A-AU
 details: null
 application:
-  definition: 'Proximetry:Proximetry_Agent:1.0.0::Application:Proximetry_Cloud_Agent:'
+  definition: 'Proximetry:Proximetry_Agent:1.0.0::Application:Atmel_Cloud_Proximetry_Example:'
   configuration:
     def_password: Password
     def_sec_type: WPA/WPA2 personal(PSK)

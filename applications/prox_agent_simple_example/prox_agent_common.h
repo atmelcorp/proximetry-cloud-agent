@@ -1,11 +1,12 @@
 /*******************************************************************************
  *
- * AMP Agent example implementation
+ * Proximetry AMP Agent Application
  *
- * Copyright (c) 2015 Proximetry, Inc.
- * All Rights Reserved
+ * Copyright (c) 2016 Proximetry Inc. All rights reserved.
+ * Authors: Proximetry
  *
  ******************************************************************************/
+
 /**
  * @file common.h
  * @brief
