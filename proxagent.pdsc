@@ -8,15 +8,8 @@
     <release version="1.0.0">The first release.</release>
 </releases>
 
-
-<conditions>
-	<condition id="Proximetry support">
-		<require Dfamily="SAMD21"/>
-	</condition>
-</conditions>
-
 <components>
-    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0">
         <description>This is the Proximetry Agent Component</description>
         <files>
 			<file category="include" name="prox_agent/agent_sdk-amp-c/"/>
