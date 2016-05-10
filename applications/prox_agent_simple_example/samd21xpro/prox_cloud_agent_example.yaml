@@ -31,6 +31,9 @@ middlewares:
       Delay instance: DELAY_0
       ExtIrq instance: WIFI_IRQ_0
       SPI instance: WIFI_SPI_0
+      CS Pin: CONF_WINC_SPI_CS_PIN
+      CE Pin: CONF_WINC_PIN_CHIP_ENABLE
+      RESET Pin: CONF_WINC_PIN_RESET
   CLOUD_AGENT_0:
     user_label: CLOUD_AGENT_0
     configuration:
