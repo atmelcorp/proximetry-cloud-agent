@@ -8,15 +8,31 @@
     <release version="1.0.0">The first release.</release>
 </releases>
 
+
+<conditions>
+	<condition id="Proximetry support">
+		<require Dfamily="SAMD21"/>
+	</condition>
+</conditions>
+
 <components>
-    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0">
+    <!-- <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support"> -->
+    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
         <description>This is the Proximetry Agent Component</description>
         <files>
-			<file category="include" name="prox_agent/agent_sdk-amp-c/"/>
-			<file category="library" name="prox_agent/agent_sdk-amp-c/libampagent.a"/>
-			<file category="header"  name="prox_agent/agent_sdk-amp-c/amp_agent.h"/>
+			<file category="library" name="prox_agent/lib/libprox.a"/>
+            <file category="header"  name="prox_agent/lib/prox.h"/>
+            <file category="header"  name="prox_agent/lib/prox_api.h"/>
+			<file category="include" name="prox_agent/core"/>
+			<file category="header"  name="prox_agent/core/prox_core.h"/>
+			<file category="source"  name="prox_agent/core/prox_core.c"/>
+			<file category="header"  name="prox_agent/helpers/prox_helpers.h"/>
+			<file category="source"  name="prox_agent/helpers/prox_helpers.c"/>
 			<file category="include" name="prox_agent/"/>
-			<file category="header" name="prox_agent/prox_agent_config.h"/>
+			<!-- <file category="source" name="prox_agent/prox_agent.c"/> -->
+			<!-- <file category="header" name="prox_agent/prox_agent.h"/> -->
+			<!-- <file category="header" name="prox_agent/prox_config.h"/> -->
+			<file category="header" name="prox_agent/prox_data.h"/>
             <file category="doc" name="documentation/prox_agent.rst"/>
         </files>
     </component>
@@ -26,14 +42,6 @@
 		<files>
 			<file category="source" name="applications/prox_agent_simple_example/main.c"/>
 			<file category="header" name="applications/prox_agent_simple_example/main.h" attr="config"/>
-			<file category="source" name="applications/prox_agent_simple_example/prox_agent.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/prox_agent.h"/>
-			<file category="source" name="applications/prox_agent_simple_example/prox_agent_amp.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/prox_agent_amp.h"/>
-			<file category="source" name="applications/prox_agent_simple_example/prox_agent_common.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/prox_agent_common.h"/>
-			<file category="source" name="applications/prox_agent_simple_example/socket_layer.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/socket_layer.h"/>
 			<file category="doc" 	name="documentation/prox_agent_example.rst"/>
 		</files>
 	</component>

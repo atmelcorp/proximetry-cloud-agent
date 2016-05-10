@@ -2,6 +2,26 @@
 {% macro our(thing) %}{{ middleware.user_label | upper }}_{{ thing }}{% endmacro %}
 {% macro desc_ptr() %}{{ our('desc_ptr') }}{% endmacro %}
 
+{% macro device_model_id() %}{{ middleware.configuration['prox_device_model_id'] }}{% endmacro %}
+{% macro device_model_ver() %}{{ middleware.configuration['prox_device_model_version'] }}{% endmacro %}
+
+{% macro param_en(x) %}{{ middleware.configuration['prox_param_'+x|string+'_en'] }}{% endmacro %}
+{% macro param_name(x) %}{{ middleware.configuration['prox_param_'+x|string+'_name']|lower() }}{% endmacro %}
+{% macro param_NAME(x) %}{{ middleware.configuration['prox_param_'+x|string+'_name']|upper() }}{% endmacro %}
+{% macro param_id(x) %}{{ middleware.configuration['prox_param_'+x|string+'_id'] }}{% endmacro %}
+{% macro param_type(x) %}{{middleware.configuration['prox_param_'+x|string+'_type'] }}{% endmacro %}
+{% macro param_editable(x) %}{{ middleware.configuration['prox_param_'+x|string+'_editable'] }}{% endmacro %}
+
+{% macro stat_en(x) %}{{ middleware.configuration['prox_stat_'+x|string+'_en'] }}{% endmacro %}
+{% macro stat_name(x) %}{{ middleware.configuration['prox_stat_'+x|string+'_name']|lower() }}{% endmacro %}
+{% macro stat_NAME(x) %}{{ middleware.configuration['prox_stat_'+x|string+'_name']|upper() }}{% endmacro %}
+{% macro stat_id(x) %}{{middleware.configuration['prox_stat_'+x|string+'_id'] }}{% endmacro %}
+{% macro stat_type(x) %}{{middleware.configuration['prox_stat_'+x|string+'_type'] }}{% endmacro %}
+
+{% macro alert_en(x) %}{{ middleware.configuration['prox_alert_'+x|string+'_en'] }}{% endmacro %}
+{% macro alert_name(x) %}{{ middleware.configuration['prox_alert_'+x|string+'_name']|lower() }}{% endmacro %}
+{% macro alert_NAME(x) %}{{ middleware.configuration['prox_alert_'+x|string+'_name']|upper() }}{% endmacro %}
+{% macro alert_id(x) %}{{ middleware.configuration['prox_alert_'+x|string+'_id'] }}{% endmacro %}
 
 {% macro includes() %}
 {% endmacro %}

@@ -3,8 +3,17 @@
     <middleware name="Proximetry Cloud Agent" singleton="true">
         <description>Prox Cloud Agent Component</description>
 		<user-guide path="documentation/prox_agent.rst"/>
-		<config-template path="templates/init/prox_agent_config.h.jinja2" target-path="prox_agent/prox_agent_config.h"/>
+		<config-template path="templates/init/prox_config.h" target-path="prox_agent/prox_config.h"/>
         <code-template path="templates/prox_agent_code.jinja2"/>
 		<required-component name="Cloud:Agent:Proximetry"/>
+		<!-- <required-component name="WIFI:WINC:WINC1500"/> -->
+		<dependency label="WIFI">
+			<component api="WIFI:WINC:WINC1500"/>
+			<!-- <component name="WIFI:WINC:WINC1500"/> -->
+		</dependency>
     </middleware>
+    <main>
+		<file-template path="templates/prox_agent.h.jinja2" target-path="prox_agent/prox_agent.h"/>
+		<file-template path="templates/prox_agent.c.jinja2" target-path="prox_agent/prox_agent.c"/>
+	</main>
 </config-map>
