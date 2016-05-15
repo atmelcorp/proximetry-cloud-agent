@@ -31,7 +31,7 @@
 			<file category="include" name="prox_agent/"/>
 			<!-- <file category="source" name="prox_agent/prox_agent.c"/> -->
 			<!-- <file category="header" name="prox_agent/prox_agent.h"/> -->
-			<!-- <file category="header" name="prox_agent/prox_config.h"/> -->
+			<file category="header" name="prox_agent/prox_config.h"/>
 			<file category="header" name="prox_agent/prox_data.h"/>
             <file category="doc" name="documentation/prox_agent.rst"/>
         </files>
