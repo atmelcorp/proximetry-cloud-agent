@@ -20,8 +20,8 @@
 ******************************************************************************/
 
 /**
- * @file prox.h
- * @brief Proximetry Agent Library - data interface
+ * @file prox_api.h
+ * @brief Proximetry Cloud Agent Library - Application Interface
  */
 
 #ifndef __PROXAPI_H__

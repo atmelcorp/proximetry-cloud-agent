@@ -21,19 +21,20 @@
 
 /**
  * @file prox_data.h
- * @brief Proximety Cloud Agent AMP
+ * @brief Proximetry Cloud Agent - Module Internal Interface
  * */
 
 #ifndef PROX_DATA_H
 #define PROX_DATA_H
 
-#define PROX_SDK_VER_MAJOR     2
-#define PROX_SDK_VER_MINOR     0
-#define PROX_SDK_VER_REVISION  1
-#define PROX_SDK_VER_INSTANCE  1     // if 0 then it is a pure copy of sdk without local changes.
-                                     // Increment it when the sdk code is modified due to project specific requirements.
+/* This must be increment with every new release of the component */
+#define PROX_COMPONENT_VER_MAJOR     2
+#define PROX_COMPONENT_VER_MINOR     0
+#define PROX_COMPONENT_VER_REVISION  1
+#define PROX_COMPONENT_VER_INSTANCE  0     // if 0 then it is a pure copy of module without local changes.
+                                     	   // Increment it when the module code is modified due to project specific requirements.
 
-#define PROX_SDK_VER       TOSTR(PROX_SDK_VER_MAJOR)"."TOSTR(PROX_SDK_VER_MINOR)"."TOSTR(PROX_SDK_VER_REVISION)"."TOSTR(PROX_SDK_VER_INSTANCE)
+#define PROX_COMPONENT_VER       TOSTR(PROX_COMPONENT_VER_MAJOR)"."TOSTR(PROX_COMPONENT_VER_MINOR)"."TOSTR(PROX_COMPONENT_VER_REVISION)"."TOSTR(PROX_COMPONENT_VER_INSTANCE)"-as"
 
 /*
  * @brief Statically allocated variables for library
@@ -49,11 +50,6 @@ void prox_conf_param_changed(uint32_t param_id);
  * @brief Update statistic values in the Proximetry Agent Library
  */
 void prox_stats_update(void);
-
-/**
- * @brief Set parameter values in the Proximetry Agent Library
- */
-int prox_conf_params_update(void);
 
 /**
  * @brief Update alert states in the Proximetry Agent Library

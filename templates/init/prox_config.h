@@ -41,7 +41,7 @@
 // <i> Parameter 1
 //   <id> prox_param_1_en
 #define PROX_PARAM_1       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the parameter in the code
 //   <id> prox_param_1_name
 #define PROX_PARAM_1_NAME "param_1"
@@ -58,7 +58,7 @@
 //   <i> config paramtere type
 //   <id> prox_param_1_type
 // #define PROX_PARAM_1_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_param_1_id
 // #define PROX_PARAM_1_ID   1
@@ -73,7 +73,7 @@
 // <i> Parameter 2
 //   <id> prox_param_2_en
 #define PROX_PARAM_2       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the parameter in the code
 //   <id> prox_param_2_name
 #define PROX_PARAM_2_NAME "param_2"
@@ -90,7 +90,7 @@
 //   <i> config paramtere type
 //   <id> prox_param_2_type
 // #define PROX_PARAM_2_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_param_2_id
 // #define PROX_PARAM_2_ID   1
@@ -105,7 +105,7 @@
 // <i> Parameter 3
 //   <id> prox_param_3_en
 #define PROX_PARAM_3       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the parameter in the code
 //   <id> prox_param_3_name
 #define PROX_PARAM_3_NAME "param_3"
@@ -122,7 +122,7 @@
 //   <i> config paramtere type
 //   <id> prox_param_3_type
 // #define PROX_PARAM_3_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_param_3_id
 // #define PROX_PARAM_3_ID   1
@@ -137,7 +137,7 @@
 // <i> Parameter 4
 //   <id> prox_param_4_en
 #define PROX_PARAM_4       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the parameter in the code
 //   <id> prox_param_4_name
 #define PROX_PARAM_4_NAME "param_4"
@@ -154,7 +154,7 @@
 //   <i> config paramtere type
 //   <id> prox_param_4_type
 // #define PROX_PARAM_4_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_param_4_id
 // #define PROX_PARAM_4_ID   1
@@ -169,7 +169,7 @@
 // <i> Parameter 5
 //   <id> prox_param_5_en
 #define PROX_PARAM_5       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the parameter in the code
 //   <id> prox_param_5_name
 #define PROX_PARAM_5_NAME "param_5"
@@ -186,7 +186,7 @@
 //   <i> config paramtere type
 //   <id> prox_param_5_type
 // #define PROX_PARAM_5_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_param_5_id
 // #define PROX_PARAM_5_ID   1
@@ -201,7 +201,7 @@
 // <i> Parameter 6
 //   <id> prox_param_6_en
 #define PROX_PARAM_6       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the parameter in the code
 //   <id> prox_param_6_name
 #define PROX_PARAM_6_NAME "param_6"
@@ -218,7 +218,7 @@
 //   <i> config paramtere type
 //   <id> prox_param_6_type
 // #define PROX_PARAM_6_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_param_6_id
 // #define PROX_PARAM_6_ID   1
@@ -233,7 +233,7 @@
 // <i> Parameter 7
 //   <id> prox_param_7_en
 #define PROX_PARAM_7       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the parameter in the code
 //   <id> prox_param_7_name
 #define PROX_PARAM_7_NAME "param_7"
@@ -250,7 +250,7 @@
 //   <i> config paramtere type
 //   <id> prox_param_7_type
 // #define PROX_PARAM_7_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_param_7_id
 // #define PROX_PARAM_7_ID   1
@@ -265,7 +265,7 @@
 // <i> Parameter 8
 //   <id> prox_param_8_en
 #define PROX_PARAM_8       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the parameter in the code
 //   <id> prox_param_8_name
 #define PROX_PARAM_8_NAME "param_8"
@@ -282,7 +282,7 @@
 //   <i> config paramtere type
 //   <id> prox_param_8_type
 // #define PROX_PARAM_8_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_param_8_id
 // #define PROX_PARAM_8_ID   1
@@ -303,7 +303,7 @@
 // <i> Statistic 1
 //   <id> prox_stat_1_en
 #define PROX_STAT_1       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the statistic in the code
 //   <id> prox_stat_1_name
 #define PROX_STAT_1_NAME "stat_1"
@@ -320,7 +320,7 @@
 //   <i> default: bool
 //   <id> prox_stat_1_type
 // #define PROX_STAT_1_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_stat_1_id
 // #define PROX_STAT_1_ID   1
@@ -332,7 +332,7 @@
 // <i> Statistic 2
 //   <id> prox_stat_2_en
 #define PROX_STAT_2       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the statistic in the code
 //   <id> prox_stat_2_name
 #define PROX_STAT_2_NAME "stat_2"
@@ -349,7 +349,7 @@
 //   <i> default: bool
 //   <id> prox_stat_2_type
 // #define PROX_STAT_2_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_stat_2_id
 // #define PROX_STAT_2_ID   1
@@ -361,7 +361,7 @@
 // <i> Statistic 3
 //   <id> prox_stat_3_en
 #define PROX_STAT_3       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the statistic in the code
 //   <id> prox_stat_3_name
 #define PROX_STAT_3_NAME "stat_3"
@@ -378,7 +378,7 @@
 //   <i> default: bool
 //   <id> prox_stat_3_type
 // #define PROX_STAT_3_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_stat_3_id
 // #define PROX_STAT_3_ID   1
@@ -390,7 +390,7 @@
 // <i> Statistic 4
 //   <id> prox_stat_4_en
 #define PROX_STAT_4       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the statistic in the code
 //   <id> prox_stat_4_name
 #define PROX_STAT_4_NAME "stat_4"
@@ -407,7 +407,7 @@
 //   <i> default: bool
 //   <id> prox_stat_4_type
 // #define PROX_STAT_4_TYPE   1
-//   <o> id <1-65545>
+//   <o> ID <1-65545>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_stat_4_id
 // #define PROX_STAT_4_ID   1
@@ -420,7 +420,7 @@
 // <i> Statistic 5
 //   <id> prox_stat_5_en
 #define PROX_STAT_5       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the statistic in the code
 //   <id> prox_stat_5_name
 #define PROX_STAT_5_NAME "stat_5"
@@ -437,7 +437,7 @@
 //   <i> default: bool
 //   <id> prox_stat_5_type
 // #define PROX_STAT_5_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_stat_5_id
 // #define PROX_STAT_5_ID   1
@@ -450,7 +450,7 @@
 // <i> Statistic 6
 //   <id> prox_stat_6_en
 #define PROX_STAT_6       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the statistic in the code
 //   <id> prox_stat_6_name
 #define PROX_STAT_6_NAME "stat_6"
@@ -467,7 +467,7 @@
 //   <i> default: bool
 //   <id> prox_stat_6_type
 // #define PROX_STAT_6_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_stat_6_id
 // #define PROX_STAT_6_ID   1
@@ -479,7 +479,7 @@
 // <i> Statistic 7
 //   <id> prox_stat_7_en
 #define PROX_STAT_7       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the statistic in the code
 //   <id> prox_stat_7_name
 #define PROX_STAT_7_NAME "stat_7"
@@ -496,7 +496,7 @@
 //   <i> default: bool
 //   <id> prox_stat_7_type
 // #define PROX_STAT_7_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_stat_7_id
 // #define PROX_STAT_7_ID   1
@@ -508,7 +508,7 @@
 // <i> Statistic 8
 //   <id> prox_stat_8_en
 #define PROX_STAT_8       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the statistic in the code
 //   <id> prox_stat_8_name
 #define PROX_STAT_8_NAME "stat_8"
@@ -525,7 +525,7 @@
 //   <i> default: bool
 //   <id> prox_stat_8_type
 // #define PROX_STAT_8_TYPE   1
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_stat_8_id
 // #define PROX_STAT_8_ID   1
@@ -543,11 +543,11 @@
 // <i> Alert 1
 //   <id> prox_alert_1_en
 #define PROX_ALERT_1       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the alert in the code
 //   <id> prox_alert_1_name
 #define PROX_ALERT_1_NAME "alert_1"
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_alert_1_id
 // #define PROX_ALERT_1_ID   1
@@ -559,11 +559,11 @@
 // <i> Alert 2
 //   <id> prox_alert_2_en
 #define PROX_ALERT_2       1
-//   <s>API name
+//   <s>Name
 //   <i> A name which define the alert in the code
 //   <id> prox_alert_2_name
 #define PROX_ALERT_2_NAME "alert_2"
-//   <o> id <1-65535>
+//   <o> ID <1-65535>
 //   <i> An id is crucial and must be consistent with an id on the server side 
 //   <id> prox_alert_2_id
 // #define PROX_ALERT_2_ID   1

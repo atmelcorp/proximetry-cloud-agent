@@ -20,8 +20,8 @@
 ******************************************************************************/
 
 /**
- * @file prox_agent.h
- * @brief Proximetry Cloud Agent
+ * @file prox_core.h
+ * @brief Proximetry Cloud Agent - System Interface
  * */
 
 #ifndef prox_agent_h

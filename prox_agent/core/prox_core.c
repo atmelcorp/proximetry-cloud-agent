@@ -20,8 +20,8 @@
 ******************************************************************************/
 
 /**
- * @file prox_agent.c
- * @brief AMP Agent
+ * @file prox_core.c
+ * @brief Proximetry Cloud Agent - Platform specific code
  * */
 
 #include "../helpers/prox_helpers.h"
@@ -79,14 +79,14 @@ const char *prox_get_device_id(void)
  */
 const char *prox_get_device_name(void)
 {
-	static char device_name[100];
-	uint8_t mac[6];
-	if (m2m_wifi_get_mac_address(mac) != M2M_SUCCESS)
-	{
-		/* error_stop("Unable to get wifi mac address"); */
-	}
-	sprintf(device_name,"%s_%02X%02X%02X",PROX_DEVICE_NAME,mac[3],mac[4],mac[5]);
-	return device_name;
+    static char device_name[100];
+    uint8_t mac[6];
+    if (m2m_wifi_get_mac_address(mac) != M2M_SUCCESS)
+    {
+        /* error_stop("Unable to get wifi mac address"); */
+    }
+    sprintf(device_name,"%s_%02X%02X%02X",PROX_DEVICE_NAME,mac[3],mac[4],mac[5]);
+    return device_name;
 }
 
 /**
@@ -96,7 +96,7 @@ const char *prox_get_device_name(void)
  */
 const char *prox_get_activation_code(void)
 {
-	return PROX_ACTIVATION_CODE;
+    return PROX_ACTIVATION_CODE;
 }
 
 /**
@@ -106,7 +106,7 @@ const char *prox_get_activation_code(void)
  */
 unsigned int prox_get_sync_interval(void)
 {
-	return PROX_SYNC_INTERVAL;
+    return PROX_SYNC_INTERVAL;
 }
 
 /**
@@ -118,22 +118,24 @@ unsigned int prox_get_sync_interval(void)
  */
 void prox_set_sync_interval(uint32_t time_interval)
 {
-	prox_settings.sync_msg_interval = time_interval;
+    prox_settings.sync_msg_interval = time_interval;
 }
 
 
 /**
  * @brief Proximetry Agent print library configuration parameters
  */
-static void dump_sys_info(void)
+static void prox_dump_agent_config(void)
 {
-    PROX_LOG("--- Agent system info ---" EOL);
+    PROX_LOG("--- Agent config ---" EOL);
     PROX_LOG("   Device id:         %s" EOL, prox_settings.device_id);
     PROX_LOG("   Device name:       %s" EOL, prox_settings.device_name);
     PROX_LOG("   Model id:          0x%X" EOL, (int)prox_settings.model_id);
     PROX_LOG("   Software ver:      0x%X" EOL, (int)prox_settings.software_ver);
     PROX_LOG("   Sync.msg.interval  %d" EOL, prox_settings.sync_msg_interval);
     PROX_LOG("   Activation code:   %s" EOL, prox_settings.activation_code);
+    PROX_LOG("   Cloud Server ip:   %s" EOL, PROX_SERVER_IP);
+    PROX_LOG("   Cloud Server port: %u" EOL, PROX_PORT);
 }
 
 /**
@@ -144,9 +146,10 @@ static void dump_sys_info(void)
  */
 static int prox_send_msg(uint8_t *data, uint16_t size)
 {
-	/* PROX_LOG("%s: sin_port:%d"EOL,__FUNCTION__,_htons(remote.sin_port)); */
-	return  sendto(prox_sock, (void *)data, size, 0, (struct sockaddr*)&remote, sizeof(struct sockaddr_in));
+    /* PROX_LOG("%s: sin_port:%d"EOL,__FUNCTION__,_htons(remote.sin_port)); */
+    return  sendto(prox_sock, (void *)data, size, 0, (struct sockaddr*)&remote, sizeof(struct sockaddr_in));
 }
+
 /**
  * @brief Proximery Agent receive message
  *
@@ -154,31 +157,31 @@ static int prox_send_msg(uint8_t *data, uint16_t size)
  */
 void prox_recv_msg(uint8_t *buffer, size_t len)
 {
-	prox_process_msg((uint8_t*)buffer,len);
+    prox_process_msg((uint8_t*)buffer,len);
 }
 
 /**
- * @brief Proximety Agent socket initialization
+ * @brief Proximetry Agent socket initialization
  *
  */
 static int prox_init_socket(void)
 {
-	/* allocate network resources */
-	struct sockaddr_in local;
+    /* allocate network resources */
+    struct sockaddr_in local;
 
-	PROX_LOG("Init agent socket"EOL);
+    PROX_LOG("Init agent socket"EOL);
 
-	if(prox_sock != -1)
-	{
-		close(prox_sock);
-		prox_sock = -1;
-	}
+    if(prox_sock != -1)
+    {
+        close(prox_sock);
+        prox_sock = -1;
+    }
 
-	if ((prox_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-	{
-		printf("Agent socke error"EOL);
-		return -1;
-	}
+    if ((prox_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        printf("Agent socke error"EOL);
+        return -1;
+    }
 
 #define PROX_AGENT_LOCAL_PORT  25000
     local.sin_family = AF_INET;
@@ -187,7 +190,7 @@ static int prox_init_socket(void)
 #undef PROX_AGENT_LOCAL_PORT
 
     remote.sin_family = AF_INET;
-    remote.sin_addr.s_addr = read_ip(PROX_SERVER_IP);
+    remote.sin_addr.s_addr = prox_str2bin_ip(PROX_SERVER_IP);
     remote.sin_port =  _htons(PROX_PORT);
 
     if (bind(prox_sock, (struct sockaddr *)&local, sizeof(struct sockaddr_in)) != SOCK_ERR_NO_ERROR)
@@ -225,19 +228,26 @@ int prox_get_socket(bool init)
  */
 int prox_agent_init(void)
 {
-    PROX_LOG("agent_start" EOL);
-    PROX_LOG("Server cloud IP: %s" EOL, PROX_SERVER_IP);
+    PROX_LOG("agent start:" EOL);
+    PROX_LOG("COMPONENT version: %s" EOL,PROX_COMPONENT_VER);
+    PROX_LOG("AGENT 	version: %s" EOL,PROX_AGENT_VER);
+    PROX_LOG("LIB   	version: %s" EOL,prox_get_library_version());
+
+    PROX_LOG("Cloud ip: %s" EOL,PROX_SERVER_IP);
+
+	// done from thw winc driver level
+	//prox_init_socket();
 
     /* fill the library initialization structure */
     prox_settings.model_id          = PROX_DEVICE_MODEL;
     prox_settings.software_ver      = PROX_CAPFILE_VER;
-	prox_settings.sync_msg_interval = prox_get_sync_interval();
+    prox_settings.sync_msg_interval = prox_get_sync_interval();
 
     prox_settings.activation_code   = prox_get_activation_code();
     prox_settings.device_id         = prox_get_device_id();
     prox_settings.device_name       = prox_get_device_name();
 
-    dump_sys_info();
+    prox_dump_agent_config();
 
     prox_callbacks.conf_param_changed = prox_conf_param_changed;
     prox_callbacks.send_msg           = prox_send_msg;
@@ -252,7 +262,7 @@ int prox_agent_init(void)
     /* initialize the Proximetry Agent Application parameters*/
     prox_conf_params_update();
 
-	prox_agent_initialized = true;
+    prox_agent_initialized = true;
 
     return 0;
 }
@@ -267,11 +277,11 @@ int prox_agent_init(void)
  */
 void prox_agent_task(void)
 {
-	if (!prox_agent_initialized)
-	{
-		PROX_LOG("warning: agent is uninitialized"EOL);
-		return;
-	}
+    if (!prox_agent_initialized)
+    {
+        PROX_LOG("warning: agent is uninitialized"EOL);
+        return;
+    }
 
     prox_alerts_update();
     prox_sync_task();

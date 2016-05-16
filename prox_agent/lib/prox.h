@@ -22,7 +22,7 @@
 /**
  * @file prox.h
  *
- * @brief Proximetry Agent Library programming interface
+ * @brief Proximetry Cloud Agent Library - Programming Interface
  */
 
 #ifndef __PROX_H__

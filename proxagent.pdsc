@@ -5,6 +5,8 @@
 <description>This is the Proximetry Cloud Agent pack</description>
 <url>http://www.atmel.com</url>
 <releases>
+    <release version="2.0.1" date="2016-05-16">Cleanups.</release>
+    <release version="2.0.0" date="2016-05-10">The Cloud Data Types configuration with the frontend form.</release>
     <release version="1.0.0">The first release.</release>
 </releases>
 
@@ -17,7 +19,7 @@
 
 <components>
     <!-- <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support"> -->
-    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="2.0.1" condition="Proximetry support">
         <description>This is the Proximetry Agent Component</description>
         <files>
 			<file category="library" name="prox_agent/lib/libprox.a"/>
@@ -29,8 +31,6 @@
 			<file category="header"  name="prox_agent/helpers/prox_helpers.h"/>
 			<file category="source"  name="prox_agent/helpers/prox_helpers.c"/>
 			<file category="include" name="prox_agent/"/>
-			<!-- <file category="source" name="prox_agent/prox_agent.c"/> -->
-			<!-- <file category="header" name="prox_agent/prox_agent.h"/> -->
 			<file category="header" name="prox_agent/prox_config.h"/>
 			<file category="header" name="prox_agent/prox_data.h"/>
             <file category="doc" name="documentation/prox_agent.rst"/>

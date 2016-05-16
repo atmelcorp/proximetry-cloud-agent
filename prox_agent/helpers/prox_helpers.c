@@ -19,6 +19,11 @@
 *
 ******************************************************************************/
 
+/**
+ * @file prox_helpers.c
+ * @brief Proximety Cloud Agent - Helpers
+ * */
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -28,7 +33,7 @@
 /**
  * \brief Concatenate 4 IP address digits into one 4-byte variable
  */
-inline uint32_t ip_int(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
+uint32_t prox_2uint_ip(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 {
 	union { uint32_t i; uint8_t ip[4]; } ip_int = {.ip = {a, b, c, d}};
 	return ip_int.i;
@@ -37,7 +42,7 @@ inline uint32_t ip_int(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 /**
  * \brief Converts IPv4 address from string to 4-bytes variable
  */
-uint32_t read_ip(const char *str)
+uint32_t prox_str2bin_ip(const char *str)
 {
 	const char *ip0 = str;
 	const char *ip1 = strchr(ip0, '.');
@@ -49,5 +54,5 @@ uint32_t read_ip(const char *str)
 	const char *ip3 = strchr(ip2, '.');
 	if (ip3++ == NULL)
 		return 0;
-	return ip_int(atoi(ip0), atoi(ip1), atoi(ip2), atoi(ip3));
+	return prox_2uint_ip(atoi(ip0), atoi(ip1), atoi(ip2), atoi(ip3));
 }
