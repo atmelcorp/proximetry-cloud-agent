@@ -5,7 +5,7 @@ board:
   device: SAMD21G18A-MU
 details: null
 application:
-  definition: 'Proximetry:Proximetry_Agent:2.0.1::Application:Atmel_Cloud_Proximetry_Example:'
+  definition: 'Proximetry:Proximetry_Agent:2.0.2::Application:Atmel_Cloud_Proximetry_Example:'
   configuration:
     def_password: Password
     def_sec_type: WPA/WPA2 personal(PSK)
@@ -44,7 +44,7 @@ middlewares:
       prox_alert_2_en: true
       prox_alert_2_id: 22
       prox_alert_2_name: SW0
-      prox_device_model_id: 524648
+      prox_device_model_id: 0x80168
       prox_device_model_version: 4
       prox_device_name: SAMD21_STARTNAME
       prox_param_1_editable: false
@@ -119,7 +119,7 @@ middlewares:
       prox_stat_8_id: 1
       prox_stat_8_name: stat_8
       prox_stat_8_type: bool
-    definition: Proximetry:Proximetry_Agent:2.0.1::Proximetry_Cloud_Agent
+    definition: Proximetry:Proximetry_Agent:2.0.2::Proximetry_Cloud_Agent
     functionality: Cloud_Agent
     api: Cloud:Agent:Proximetry
     dependencies:

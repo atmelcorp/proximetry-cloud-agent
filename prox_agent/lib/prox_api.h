@@ -53,7 +53,7 @@ void prox_conf_param_set(void);
 /**
  * @brief Write configuration parameter
  *
- * The funtion have to be used to write a configuration parameter value to the agent library.
+ * The function have to be used to write a configuration parameter value to the agent library.
  */
 int prox_write_conf_param_bool(uint32_t id, bool value);
 int prox_write_conf_param_i8(uint32_t id, int8_t value);
@@ -68,7 +68,7 @@ int prox_write_conf_param_string(uint32_t id, const char *value);
 /**
  * @brief Read configuration parameter
  *
- * The funtion have to be used to read a configuration parameter value from the agent library.
+ * The function have to be used to read a configuration parameter value from the agent library.
  */
 int prox_read_conf_param_bool(uint32_t id, bool *value);
 int prox_read_conf_param_i8(uint32_t id, int8_t *value);
@@ -83,7 +83,7 @@ int prox_read_conf_param_string(uint32_t id, char *value);
 /**
  * @brief Write statistic 
  *
- * The funtion have to be used to write a statistic value to the agent library.
+ * The function have to be used to write a statistic value to the agent library.
  */
 int prox_write_stat_bool(uint32_t id, bool value);
 int prox_write_stat_i8(uint32_t id, int8_t value);

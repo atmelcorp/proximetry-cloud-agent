@@ -28,7 +28,7 @@
 #include "prox_config.h"
 #include "prox_data.h"
 
-{% set maxParamNumber = 8 %}
+{% set maxParamNumber = 16 %}
 {% set maxStatNumber = 8 %}
 {% set maxAlertNumber = 2 %}
 
@@ -249,21 +249,20 @@ void prox_dump_conf_params(void)
 
 /*
  * #################################################################################################################################################
- * ############################ PROJECT SPECIFIC INTERFACE #########################################################################################
+ * ############################ PROJECT SPECIFIC CODE ##############################################################################################
  * #################################################################################################################################################
- *
- * Please create a copy of functions from list below from prox_agent.c file into the main project file and implement the functionalities they expect:
- * (retrieve the particular configuration parameters values, the configuration parameter change logic, get the statistics values, the alarms conditions logic)
- *  List of functions to copy:
+ * 
+ *  The following functions:
  *		int prox_conf_params_update(void);                      - retrieve the particular configuration parameters values,
  *		void prox_conf_param_changed(uint32_t param_id);		- implementation of the logic related to the configuration parameter changes arrived from the cloud,
  *		void prox_stats_update(void);							- retrieve the particular sensor values,
- *		void prox_alerts_update(void);							- implementation of the alarms condition logic.
+ *		void prox_alerts_update(void);							- implementation of the alarms condition logic,
+ *  implement the project specific code related to Cloud Data Types. 
+ *  This file will be overwritten when reconfiguring your Atmel Start project. 
+ *  Please copy the functions to a separate file to avoid losing it when reconfiguring.
+ *
+ *  All functions belonging to Project Specific Code are weak functions - you can redefine them in the project specific files.
  */
-
-//##################################################################################################################################################
- #if 0    /* The project specific interface: begin */
-//##################################################################################################################################################
 
 /**
  * @brief Parameter changed callback function
@@ -271,6 +270,7 @@ void prox_dump_conf_params(void)
  * This function is invoked by the Proximetry Agent Library, as a callback, when a configuration parameter has been changed from the Cloud service.
  * Here is the place for adding the logic related to the configuration parameter modification .
  */
+void prox_conf_param_changed(uint32_t param_id) __attribute__((weak));
 void prox_conf_param_changed(uint32_t param_id)
 {
 
@@ -384,7 +384,8 @@ void prox_conf_param_changed(uint32_t param_id)
  * This routine is invoked periodically by the Proximetry Agent Library to send statistics to the Cloud
  * Put here code responsible for sensor readings
  */
-void prox_stats_update(void)
+void prox_stats_update(void) __attribute__((weak));
+void prox_stats_update(void) 
 {
 {%- for middleware in middlewares if middleware.tpl is not none %}
 	{%- for item in range(1,maxStatNumber+1) %}
@@ -484,7 +485,8 @@ void prox_stats_update(void)
  *
  * Put here code responsible for reading device configuration parameters
  */
-int prox_conf_params_update(void)
+int prox_conf_params_update(void) __attribute__((weak));
+int prox_conf_params_update(void) 
 {
 
 {%- for middleware in middlewares if middleware.tpl is not none %}
@@ -581,6 +583,7 @@ int prox_conf_params_update(void)
  * This routine is invoked by the Agent thread for updating alert states.
  * Add here code responsible for setting and clearing alerts.
  */
+void prox_alerts_update(void) __attribute__((weak));
 void prox_alerts_update(void)
 {
     //Use the funtions below to set/clear particular alerts
@@ -600,5 +603,4 @@ void prox_alerts_update(void)
 }
 
 //##################################################################################################################################################
-#endif /* The project specific interface: end */
 //##################################################################################################################################################

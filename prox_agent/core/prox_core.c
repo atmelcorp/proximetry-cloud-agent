@@ -52,6 +52,7 @@ static prox_callbacks_t prox_callbacks;
  * The device id should be unique for each device. The best candidate for the device_id is a mcu serial number.
  * Proximetry Device_ID is a max 100 chars width string.
  */
+const char *prox_get_device_id(void) __attribute__((weak));
 const char *prox_get_device_id(void)
 {
     static char device_serial_no[33];
@@ -77,6 +78,7 @@ const char *prox_get_device_id(void)
  *
  * If settings are in external storage the functions should implements corresponding code.
  */
+const char *prox_get_device_name(void) __attribute__((weak));
 const char *prox_get_device_name(void)
 {
     static char device_name[100];
@@ -94,6 +96,7 @@ const char *prox_get_device_name(void)
  *
  * If settings are in external storage the functions should implements corresponding code.
  */
+const char *prox_get_activation_code(void) __attribute__((weak));
 const char *prox_get_activation_code(void)
 {
     return PROX_ACTIVATION_CODE;
@@ -104,6 +107,7 @@ const char *prox_get_activation_code(void)
  *
  * If settings are in external storage the functions should implements corresponding code.
  */
+unsigned int prox_get_sync_interval(void) __attribute__((weak));
 unsigned int prox_get_sync_interval(void)
 {
     return PROX_SYNC_INTERVAL;
@@ -116,6 +120,7 @@ unsigned int prox_get_sync_interval(void)
  *
  * If sync interval changes must be persistent the function should implements corresponding code.
  */
+void prox_set_sync_interval(uint32_t time_interval) __attribute__((weak));
 void prox_set_sync_interval(uint32_t time_interval)
 {
     prox_settings.sync_msg_interval = time_interval;
