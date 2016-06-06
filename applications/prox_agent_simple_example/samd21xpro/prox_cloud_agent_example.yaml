@@ -31,9 +31,9 @@ middlewares:
       Delay instance: DELAY_0
       ExtIrq instance: WIFI_IRQ_0
       SPI instance: WIFI_SPI_0
-      CS Pin: CONF_WINC_SPI_CS_PIN
-      CE Pin: CONF_WINC_PIN_CHIP_ENABLE
-      RESET Pin: CONF_WINC_PIN_RESET
+      CS Pin: WINC_SPI_CS_PIN
+      CE Pin: WINC_PIN_CHIP_ENABLE
+      RESET Pin: WINC_PIN_RESET
   CLOUD_AGENT_0:
     user_label: CLOUD_AGENT_0
     configuration:
@@ -555,17 +555,17 @@ pads:
     mode: Digital input
     user_label: CONF_WINC_EXT_INT_PIN
     configuration: null
-  CONF_WINC_PIN_CHIP_ENABLE:
+  WINC_PIN_CHIP_ENABLE:
     name: PB05
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21J18A-AU::pad::PB05
     mode: Digital output
-    user_label: CONF_WINC_PIN_CHIP_ENABLE
+    user_label: WINC_PIN_CHIP_ENABLE
     configuration: null
-  CONF_WINC_PIN_RESET:
+  WINC_PIN_RESET:
     name: PB06
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21J18A-AU::pad::PB06
     mode: Digital output
-    user_label: CONF_WINC_PIN_RESET
+    user_label: WINC_PIN_RESET
     configuration: null
   CONF_WINC_WAKE_PIN:
     name: PB07
@@ -579,11 +579,11 @@ pads:
     mode: Digital input
     user_label: CONF_WINC_SPI_MISO
     configuration: null
-  CONF_WINC_SPI_CS_PIN:
+  WINC_SPI_CS_PIN:
     name: PA05
     definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21J18A-AU::pad::PA05
     mode: Digital output
-    user_label: CONF_WINC_SPI_CS_PIN
+    user_label: WINC_SPI_CS_PIN
     configuration: null
   CONF_WINC_SPI_MOSI:
     name: PA06
