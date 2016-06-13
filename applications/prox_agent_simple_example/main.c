@@ -8,12 +8,13 @@
 #include "socket/include/socket.h"
 
 #include "driver/include/m2m_wifi.h"
-#include "prox_core.h"
 #include "at30tse75x.h"
 #include "main.h"
 #include <temperature_sensor_main.h>
 
+#include "prox_core.h"
 #include "prox_agent.h"
+#include "helpers/prox_helpers.h"
 
 #define CONNECTION_TIMEOUT   	10000  						//[ms] - timeout for wifi [re]connection
 
@@ -21,6 +22,8 @@
 
 #define APP_VER "0.2.0"
 #define STRING_HEADER EOL EOL "Start Proximetry Agent Simple Example " APP_VER " --" EOL \
+
+#define EOL "\r\n"
 
 /** Wi-Fi status variable. */
 static bool gbConnectedWifi = false;
@@ -108,7 +111,7 @@ static void wifi_cb(uint8 u8MsgType, void *pvMsg)
 			printf("Wi-Fi IP is %s\r\n",wifi_ip_str);
 			gbConnectedWifi = true;
 			prox_get_socket(true);
-			prox_conf_params_update();
+			prox_conf_param_push__ip(wifi_ip_str);
 			break;
 		}
 
@@ -137,13 +140,6 @@ static void wifi_cb(uint8 u8MsgType, void *pvMsg)
 	}
 }
 
-/**
- * \brief function gives time stamp
- */
-uint64_t time_ms(void)
-{
-	return timer_1ms;
-}
 
 /**
  * \brief Timer 0 task callback
@@ -151,6 +147,27 @@ uint64_t time_ms(void)
 static void TIMER_0_task1_cb(const struct timer_task *const timer_task)
 {
 	timer_1ms++;
+}
+
+/**
+ * @brief Proximetry Agent get time
+ *
+ * This routine is invokes by Proximetry Agent Library.
+ * It must retrieves timestamp from the system.
+ *
+ */
+uint64_t time_ms(void)
+{
+	return timer_1ms;
+}
+
+/**
+ * \brief function gives time stamp
+ */
+
+uint64_t prox_callback__time_ms(void)
+{
+	return time_ms();
 }
 
 /**
@@ -399,109 +416,17 @@ int16_t io1_read_illuminance_blk(void)
 	return (int16_t)((((uint32_t)4096 - voltage) * 66) / 4096);
 }
 
-/*
- * #################################################################################################################################################
- * ############################ PROXIMETRY CLOUD AGENT PROJECT SPECIFIC INTERFACE : BEGIN ##########################################################
- * #################################################################################################################################################
- */
-
-/**
- * @brief Parameter changed callback function
- *
- * This function is invoked by the Proximetry Agent Library, as a callback, when a configuration parameter has been changed from the Cloud service.
- * Here is the place for adding the logic related to the configuration parameter modification .
- */
-void prox_conf_param_changed(uint32_t param_id)
-{
-    int32_t param_led_onoff;
-    int32_t param_led_freq;
-
-    switch(param_id)
-    {
-        case PROX_CONF_PARAM_ID__LED_ONOFF:
-            prox_read_conf_param_i32(PROX_CONF_PARAM_ID__LED_ONOFF,&param_led_onoff);
-            PROX_LOG( "PROX_CONF_PARAM_ID__LED_ONOFF: %d" EOL,(int)param_led_onoff);
-            // Add logic for change
-            if (0 == param_led_onoff )
-                led0_off();      /* disable LED0 */
-            else
-                led0_on();       /* enable LED0  */
-            break;
-        case PROX_CONF_PARAM_ID__LED_FREQ:
-            prox_read_conf_param_i32(PROX_CONF_PARAM_ID__LED_FREQ,&param_led_freq);
-            PROX_LOG( "PROX_CONF_PARAM_ID__LED_FREQ: %d" EOL,(int)param_led_freq);
-            // Add logic for change
-            set_led0_blinking_freq(param_led_freq);
-            break;
-	}
-}
-
-/**
- * @brief Update statistic values in the Proximetry Agent Library
- *
- * This routine is invoked periodically by the Proximetry Agent Library to send statistics to the Cloud
- * Put here code responsible for sensor readings
- */
-void prox_stats_update(void)
-{
-    // Add here the code to get the io1_ilum value from a sensor
-    int32_t stat_io1_ilum =  io1_read_illuminance_blk();
-
-    // Add here the code to get the sw0 value from a sensor
-    int32_t stat_sw0 =  gpio_get_pin_level(SW0) ? 0 : 1;
-
-	// Add here the code to get the io1_temp value from a sensor
-    float stat_io1_temp =  temperature_sensor_read(AT30TSE75X);
-
-	// Add here the code to get the rssi value from a sensor
-    float stat_rssi =  (float)wifi_get_rssi_blk();
-
-    //Write statistic values to the Proximetry Agent Library
-    prox_write_stat_i32(PROX_STAT_ID__IO1_ILUM,stat_io1_ilum);
-    prox_write_stat_i32(PROX_STAT_ID__SW0,stat_sw0);
-    prox_write_stat_float(PROX_STAT_ID__IO1_TEMP,stat_io1_temp);
-    prox_write_stat_float(PROX_STAT_ID__RSSI,stat_rssi);
-
-    PROX_LOG( "PROX_STAT_ID__IO1_ILUM: %d" EOL,(int)stat_io1_ilum);
-    PROX_LOG( "PROX_STAT_ID__SW0: %d" EOL,(int)stat_sw0);
-    PROX_LOG( "PROX_STAT_ID__IO1_TEMP:"FLOAT_TO_INT_POINT_INT_FORMAT EOL,FLOAT_TO_INT_POINT_INT_VALUES(stat_io1_temp));
-    PROX_LOG( "PROX_STAT_ID__RSSI:"FLOAT_TO_INT_POINT_INT_FORMAT EOL,FLOAT_TO_INT_POINT_INT_VALUES(stat_rssi));
-
-}
 
 /**
  * @brief Set parameter values in the Proximetry Agent Library
  *
  * Put here code responsible for reading device configuration parameters
  */
-int prox_conf_params_update(void)
+void prox_set_conf_params(void)
 {
-    // Add code to get the mac value from a sensor
-    const char *param_mac = get_mac_str();
-
-    // Add code to get the ip value from a sensor
-    const char *param_ip = get_ip_str();
-
-    // Add code to get the led_onoff value from a sensor
-    int32_t param_led_onoff = get_led0_service_state();
-
-    // Add code to get the led_freq value from a sensor
-    int32_t param_led_freq = get_led0_freq();
-
-    //Write configuration parameters values to the Proximetry Agent Library
-    prox_write_conf_param_string(PROX_CONF_PARAM_ID__MAC,param_mac);
-    prox_write_conf_param_string(PROX_CONF_PARAM_ID__IP,param_ip);
-    prox_write_conf_param_i32(PROX_CONF_PARAM_ID__LED_ONOFF,param_led_onoff);
-    prox_write_conf_param_i32(PROX_CONF_PARAM_ID__LED_FREQ,param_led_freq);
-
-    PROX_LOG( "PROX_CONF_PARAM_ID__MAC: %s" EOL,param_mac);
-    PROX_LOG( "PROX_CONF_PARAM_ID__IP: %s" EOL,param_ip);
-    PROX_LOG( "PROX_CONF_PARAM_ID__LED_ONOFF: %d" EOL,(int)param_led_onoff);
-    PROX_LOG( "PROX_CONF_PARAM_ID__LED_FREQ: %d" EOL,(int)param_led_freq);
-
-    prox_conf_param_set();
-
-    return 0;
+	prox_conf_param_push__mac(get_mac_str());
+	prox_conf_param_push__led_onoff(get_led0_service_state());
+	prox_conf_param_push__led_freq(get_led0_freq());
 }
 
 /**
@@ -510,7 +435,7 @@ int prox_conf_params_update(void)
  * This routine is invoked by the Agent thread for updating alert states.
  * Add here code responsible for setting and clearing alerts.
  */
-void prox_alerts_update(void)
+void prox_alerts_service(void)
 {
 
 #define ALARM_OFF  false
@@ -526,43 +451,25 @@ void prox_alerts_update(void)
     //io1_temp  - temperature alarm with hysteresis
     if( temp > TEMPERATURE_ALERT_ON_LEVEL && alert1 == ALARM_OFF){
         LOG("alert1 on: Temperature > " FLOAT_TO_INT_POINT_INT_FORMAT EOL,FLOAT_TO_INT_POINT_INT_VALUES(TEMPERATURE_ALERT_ON_LEVEL));
-        prox_set_alert(PROX_ALERT_ID__IO1_TEMP);
+        prox_alert_set__io1_temp();
         alert1 = ALARM_ON;
     }else if (temp < TEMPERATURE_ALERT_OFF_LEVEL && alert1 == ALARM_ON ){
         LOG("alert1 off: Temperature < " FLOAT_TO_INT_POINT_INT_FORMAT EOL,FLOAT_TO_INT_POINT_INT_VALUES(TEMPERATURE_ALERT_OFF_LEVEL));
-        prox_clear_alert(PROX_ALERT_ID__IO1_TEMP);
+        prox_alert_clear__io1_temp();
         alert1 = ALARM_OFF;
     }
 
     //sw0
     if (0 == gpio_get_pin_level(SW0) && alert2 == ALARM_OFF){
         LOG("alert2 on: SW0"EOL);
-        prox_set_alert(PROX_ALERT_ID__SW0);
+        prox_alert_set__sw0();
         alert2 = ALARM_ON;
     }else if (1 == gpio_get_pin_level(SW0) && alert2 == ALARM_ON){
         LOG("alert2 off: SW0"EOL);
-        prox_clear_alert(PROX_ALERT_ID__SW0);
+        prox_alert_clear__sw0();
         alert2 = ALARM_OFF;
     }
 }
-
-/**
- * @brief Proximetry Agent get time
- *
- * This routine is invokes by Proximetry Agent Library.
- * It must retrieves timestamp from the system.
- *
- */
-uint64_t prox_time_ms(void)
-{
-	return time_ms();
-}
-
-/*
- * #################################################################################################################################################
- * ############################ PROXIMETRY CLOUD AGENT PROJECT SPECIFIC INTERFACE : END ############################################################
- * #################################################################################################################################################
- */
 
 /**
  * \brief main
@@ -587,6 +494,8 @@ int main(void)
 	socketInit();
 	registerSocketCallback(socket_layer_cb, NULL);
 
+	prox_set_conf_params();
+
 	prox_agent_init();
 
 	while(1) {
@@ -608,5 +517,9 @@ int main(void)
 		}
 
 		led0_service();
+
+		prox_alerts_service();
+
 	}
+
 }

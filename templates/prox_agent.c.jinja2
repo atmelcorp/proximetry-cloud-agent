@@ -1,3 +1,6 @@
+{% from 'templates/common.jinja2' import abbreviate_int_type %}
+{% from 'templates/common.jinja2' import select_type_to_code_type %}
+
 /*******************************************************************************
 *
 * Copyright (C) 2016 Proximetry Inc. All rights reserved.
@@ -28,27 +31,31 @@
 #include "prox_config.h"
 #include "prox_data.h"
 
-{% set maxParamNumber = 16 %}
-{% set maxStatNumber = 8 %}
-{% set maxAlertNumber = 2 %}
+{# Agent is defined first in cfgmap and should therefore be the first middleware in list#}
+#define PROX_AGENT_VER     TOSTR(PROX_DEVICE_MODEL)"."TOSTR(PROX_MODEL_VER)"-"TOSTR(PROX_INSTANCE_VER)
 
-{# The flag of the existence of the string parameters #}
-{% set paramStrExist = [] %}
-{% set paramStrEditableExist = [] %}
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%- if  middleware.tpl.param_type(item) == "string" %}
-  				{% do paramStrExist.append(1) %}
-				{%- if  middleware.tpl.param_editable(item) == "True" %}
-	  				{% do paramStrEditableExist.append(1) %}
-				{%- endif %}
-			{%- endif %}
-		{%- endif %}
-	{%- endfor %}
-{%- endfor %}
 
-{%- if paramStrExist %}
+
+
+{# Agent is defined first in cfgmap and should therefore be the first middleware in list #}
+{# Ignore the rest as they are handled via reverse dependency lookups below. #}
+{% set agent = middlewares | first %}
+
+{% set alerts = agent.get_reverse_dependency('Alerts') or [] %}
+{% set params = agent.get_reverse_dependency('Parameters') or [] %}
+{% set stats = agent.get_reverse_dependency('Statistics') or [] %}
+
+{# Get helpful subsets  #}
+{% set params_editable = params | selectattr('configuration.prox_param_editable') | list %}
+{% set params_string = params | selectattr('configuration.prox_param_type', 'equalto', 'string') | list %}
+{% set params_string_editable = params_string | selectattr('configuration.prox_param_editable') | list %}
+
+{% set num_params_editable= params_editable | length %}
+{% set num_params_string = params_string | length %}
+{% set num_params_string_editable = params_string_editable | length %}
+
+
+{%- if num_params_string > 0 %}
 /**
  * This application does not use dynamic memory allocation, all STRING configuration parameters must be statically allocated below.
  */
@@ -56,14 +63,8 @@
 /* Statically allocated memory for string parameters */
 static struct str_agent_params_s
 {
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%- if  middleware.tpl.param_type(item) == "string" %}
-    char {{  middleware.tpl.param_name(item) }}[PARAM_STR_LEN];
-			{%- endif %}
-		{%- endif %}
-	{%- endfor %}
+{%- for param_string in params_string %}
+    {{ param_string.tpl.define_string() }};
 {%- endfor %}
 } str_agent_params;
 {%- endif %}
@@ -75,32 +76,8 @@ static struct str_agent_params_s
  * For STRING parameters the statically allocated memory reference must be provided.
  * */
 static prox_conf_param_t params[] = {
-
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%- if middleware.tpl.param_type(item) == "bool" %}
-    PROX_BOOL_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}),
-			{%- elif middleware.tpl.param_type(item) == "int8" %}
-    PROX_INT8_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{ middleware.tpl.param_NAME(item)}}),
-			{%- elif middleware.tpl.param_type(item) == "int16" %}
-    PROX_INT16_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{ middleware.tpl.param_NAME(item)}}),
-			{%- elif middleware.tpl.param_type(item) == "int32" %}
-    PROX_INT32_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{ middleware.tpl.param_NAME(item)}}),
-			{%- elif middleware.tpl.param_type(item) == "uint8" %}
-    PROX_UINT8_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{ middleware.tpl.param_NAME(item)}}),
-			{%- elif middleware.tpl.param_type(item) == "uint16"%}
-    PROX_UINT16_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{ middleware.tpl.param_NAME(item)}}),
-			{%- elif middleware.tpl.param_type(item) == "uint32" %}
-    PROX_UINT32_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{ middleware.tpl.param_NAME(item)}}),
-			{%- elif middleware.tpl.param_type(item) == "float" %}
-    PROX_FLOAT_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{ middleware.tpl.param_NAME(item)}}),
-			{%- elif middleware.tpl.param_type(item) == "string" %}
-    PROX_STRING_CONF_PARAM_DEF(PROX_CONF_PARAM_ID__{{ middleware.tpl.param_NAME(item)}},str_agent_params.{{middleware.tpl.param_name(item)}}),
-			{%- else %}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
+{%- for param in params %}
+    {{ param.tpl.define_param('str_agent_params') }},
 {%- endfor %}
 };
 
@@ -111,29 +88,8 @@ static prox_conf_param_t params[] = {
  * */
 static prox_stat_t stats[] =
 {
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxStatNumber+1) %}
-		{%-if  middleware.tpl.stat_en(item) == "True" %}
-			{%- if middleware.tpl.stat_type(item) == "bool" %}
-    PROX_BOOL_STAT_DEF(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}),
-			{%- elif middleware.tpl.stat_type(item) == "int8" %}
-    PROX_INT8_STAT_DEF(PROX_STAT_ID__{{ middleware.tpl.stat_NAME(item)}}),
-			{%- elif middleware.tpl.stat_type(item) == "int16" %}
-    PROX_INT16_STAT_DEF(PROX_STAT_ID__{{ middleware.tpl.stat_NAME(item)}}),
-			{%- elif middleware.tpl.stat_type(item) == "int32" %}
-    PROX_INT32_STAT_DEF(PROX_STAT_ID__{{ middleware.tpl.stat_NAME(item)}}),
-			{%- elif middleware.tpl.stat_type(item) == "uint8" %}
-    PROX_UINT8_STAT_DEF(PROX_STAT_ID__{{ middleware.tpl.stat_NAME(item)}}),
-			{%- elif middleware.tpl.stat_type(item) == "uint16"%}
-    PROX_UINT16_STAT_DEF(PROX_STAT_ID__{{ middleware.tpl.stat_NAME(item)}}),
-			{%- elif middleware.tpl.stat_type(item) == "uint32" %}
-    PROX_UINT32_STAT_DEF(PROX_STAT_ID__{{ middleware.tpl.stat_NAME(item)}}),
-			{%- elif middleware.tpl.stat_type(item) == "float" %}
-    PROX_FLOAT_STAT_DEF(PROX_STAT_ID__{{ middleware.tpl.stat_NAME(item)}}),
-			{%- else %}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
+{%- for stat in stats %}
+    {{ stat.tpl.define_stat() }},
 {%- endfor %}
 };
 
@@ -144,12 +100,8 @@ static prox_stat_t stats[] =
  * */
 static prox_alert_t alerts[] =
 {
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxAlertNumber+1) %}
-		{%-if  middleware.tpl.alert_en(item) == "True" %}
-    PROX_ALERT_DEF(PROX_ALERT_ID__{{ middleware.tpl.alert_NAME(item)}}),
-		{%- endif %}
-	{%- endfor %}
+{%- for alert in alerts %}
+    {{ alert.tpl.define_alert() }},
 {%- endfor %}
 };
 
@@ -171,98 +123,33 @@ prox_vars_t prox_vars =
 /*                                       misc routines                                                                    */
 /********************************************************************************************************************************/
 
+/*
+ * @brief
+ */
+char* prox_get_agent_version(void)
+{
+	return PROX_AGENT_VER;
+}
+
 /**
  * @brief Prints the Proximetry Agent Application configuration parameters
  */
 void prox_dump_conf_params(void)
 {
-
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%- if middleware.tpl.param_type(item) == "bool" %}
-    bool param_{{middleware.tpl.param_name(item)}};
-			{%- elif middleware.tpl.param_type(item) == "int8" %}
-    int8_t param_{{ middleware.tpl.param_name(item)}};
-			{%- elif middleware.tpl.param_type(item) == "int16" %}
-    int16_t param_{{ middleware.tpl.param_name(item)}};
-			{%- elif middleware.tpl.param_type(item) == "int32" %}
-    int32_t param_{{ middleware.tpl.param_name(item)}};
-			{%- elif middleware.tpl.param_type(item) == "uint8" %}
-    uint8_t param_{{ middleware.tpl.param_name(item)}};
-			{%- elif middleware.tpl.param_type(item) == "uint16"%}
-    uint16_t param_{{ middleware.tpl.param_name(item)}};
-			{%- elif middleware.tpl.param_type(item) == "uint32" %}
-    uint32_t param_{{ middleware.tpl.param_name(item)}};
-			{%- elif middleware.tpl.param_type(item) == "float" %}
-    float param_{{ middleware.tpl.param_name(item)}};
-			{%- elif middleware.tpl.param_type(item) == "string" %}
-    char *param_{{ middleware.tpl.param_name(item)}};
-			{%- else %}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
-{%- endfor %}
-{%- if paramStrExist %}
-    char tmp_str[PARAM_STR_LEN];
-{%-endif%}
-
-    //Read and dump param values from the Proximetry Agent Library
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%- if middleware.tpl.param_type(item) == "bool" %}
-    prox_read_conf_param_bool(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int8" %}
-    prox_read_conf_param_int8(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int16" %}
-    prox_read_conf_param_i16(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int32" %}
-    prox_read_conf_param_i32(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint8" %}
-    prox_read_conf_param_u8(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint16"%}
-    prox_read_conf_param_u16(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint32" %}
-    prox_read_conf_param_u32(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "float" %}
-    prox_read_conf_param_float(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:"FLOAT_TO_INT_POINT_INT_FORMAT EOL,FLOAT_TO_INT_POINT_INT_VALUES(param_{{middleware.tpl.param_name(item)}}));
-			{%- elif middleware.tpl.param_type(item) == "string" %}
-    param_{{middleware.tpl.param_name(item)}} = tmp_str;
-    prox_read_conf_param_string(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %s" EOL,param_{{middleware.tpl.param_name(item)}});
-			{%- else %}
-			{%- endif%}
-		{% endif %}
-	{%- endfor %}
+{# This _could_ be inside read_and_log() #}
+{%- for param in params %}
+    {{ param.tpl.define_local_variable() }};
 {%- endfor %}
 
+{% if num_params_string %}
+    char tmp_str[PROX_CONF_PARAM_STR_LEN];
+{% endif %}
+
+    // Read and dump param values from the Proximetry Agent Library
+{% for param in params %}
+    {{ param.tpl.read_and_log('tmp_str') }}
+{% endfor %}
 }
-
-/*
- * #################################################################################################################################################
- * ############################ PROJECT SPECIFIC CODE ##############################################################################################
- * #################################################################################################################################################
- * 
- *  The following functions:
- *		int prox_conf_params_update(void);                      - retrieve the particular configuration parameters values,
- *		void prox_conf_param_changed(uint32_t param_id);		- implementation of the logic related to the configuration parameter changes arrived from the cloud,
- *		void prox_stats_update(void);							- retrieve the particular sensor values,
- *		void prox_alerts_update(void);							- implementation of the alarms condition logic,
- *  implement the project specific code related to Cloud Data Types. 
- *  This file will be overwritten when reconfiguring your Atmel Start project. 
- *  Please copy the functions to a separate file to avoid losing it when reconfiguring.
- *
- *  All functions belonging to Project Specific Code are weak functions - you can redefine them in the project specific files.
- */
 
 /**
  * @brief Parameter changed callback function
@@ -270,337 +157,87 @@ void prox_dump_conf_params(void)
  * This function is invoked by the Proximetry Agent Library, as a callback, when a configuration parameter has been changed from the Cloud service.
  * Here is the place for adding the logic related to the configuration parameter modification .
  */
-void prox_conf_param_changed(uint32_t param_id) __attribute__((weak));
 void prox_conf_param_changed(uint32_t param_id)
 {
 
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%-if  middleware.tpl.param_editable(item) == "True" %}
-				{%- if middleware.tpl.param_type(item) == "bool" %}
-    bool param_{{middleware.tpl.param_name(item)}};
-				{%- elif middleware.tpl.param_type(item) == "int8" %}
-    int8_t param_{{ middleware.tpl.param_name(item)}};
-				{%- elif middleware.tpl.param_type(item) == "int16" %}
-    int16_t param_{{ middleware.tpl.param_name(item)}};
-				{%- elif middleware.tpl.param_type(item) == "int32" %}
-    int32_t param_{{ middleware.tpl.param_name(item)}};
-				{%- elif middleware.tpl.param_type(item) == "uint8" %}
-    uint8_t param_{{ middleware.tpl.param_name(item)}};
-				{%- elif middleware.tpl.param_type(item) == "uint16"%}
-    uint16_t param_{{ middleware.tpl.param_name(item)}};
-				{%- elif middleware.tpl.param_type(item) == "uint32" %}
-    uint32_t param_{{ middleware.tpl.param_name(item)}};
-				{%- elif middleware.tpl.param_type(item) == "float" %}
-    float param_{{ middleware.tpl.param_name(item)}};
-				{%- elif middleware.tpl.param_type(item) == "string" %}
-    char *param_{{ middleware.tpl.param_name(item)}};
-				{%- else %}
-				{%- endif%}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
-{%- endfor %}
-{%- if paramStrEditableExist %}
-    char tmp_str[PARAM_STR_LEN];
+{%- if num_params_string_editable %}
+    char tmp_str[PROX_CONF_PARAM_STR_LEN];
 {%- endif %}
 
-    switch(param_id)
+    switch (param_id)
     {
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%-if  middleware.tpl.param_editable(item) == "True" %}
-				{%- if middleware.tpl.param_type(item) == "bool" %}
-        case PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:
-            prox_read_conf_param_bool(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-            PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}} changed to: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-            // Add logic for change
-            // ...
+{%- for param in params_editable %}
+        case {{ param.tpl.get_id_define() }}:
+            {% set param_type = param.tpl.get_type() -%}
+            {%- set param_type_t = select_type_to_code_type(param_type) -%}
+            {%- set param_name = param.tpl.get_name() -%}
+            PROX_LOG("{{param_name}} change" EOL);
+            {
+                {{param_type_t}} value;
+                {% if param_type == 'string' -%}
+                value = tmp_str;
+                prox_read_conf_param_{{abbreviate_int_type(param_type)}}({{param.tpl.get_id_define()}},value);
+                {%- else -%}
+                prox_read_conf_param_{{abbreviate_int_type(param_type)}}({{param.tpl.get_id_define()}},&value);
+                {%- endif %}
+                {{ param.tpl.get_callback_name() }}(value);
+            }
             break;
-				{%- elif middleware.tpl.param_type(item) == "int8" %}
-        case PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:
-            prox_read_conf_param_i8(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-            PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-            // Add logic for change
-            // ...
-            break;
-				{%- elif middleware.tpl.param_type(item) == "int16" %}
-        case PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:
-            prox_read_conf_param_i16(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-            PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-            // Add logic for change
-            // ...
-            break;
-				{%- elif middleware.tpl.param_type(item) == "int32" %}
-        case PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:
-            prox_read_conf_param_i32(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-            PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-            // Add logic for change
-            // ...
-            break;
-				{%- elif middleware.tpl.param_type(item) == "uint8" %}
-        case PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:
-            prox_read_conf_param_u8(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-            PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-            // Add logic for change
-            // ...
-            break;
-				{%- elif middleware.tpl.param_type(item) == "uint16"%}
-        case PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:
-            prox_read_conf_param_u16(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-            PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-            // Add logic for change
-            // ...
-            break;
-				{%- elif middleware.tpl.param_type(item) == "uint32" %}
-        case PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:
-            prox_read_conf_param_u32(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-            PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-            // Add logic for change
-            // ...
-            break;
-				{%- elif middleware.tpl.param_type(item) == "float" %}
-        case PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:
-			param_{{middleware.tpl.param_name(item)}} = tmp_str;
-            prox_read_conf_param_float(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},&param_{{middleware.tpl.param_name(item)}});
-            PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:"FLOAT_TO_INT_POINT_INT_FORMAT EOL,FLOAT_TO_INT_POINT_INT_VALUES(param_{{middleware.tpl.param_name(item)}}));
-            // Add logic for change
-            // ...
-            break;
-				{%- else %}
-				{%- endif%}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
+
 {%- endfor %}
-	}
+    default:
+        break;
+    }
 }
 
-/**
- * @brief Update statistic values in the Proximetry Agent Library
- *
- * This routine is invoked periodically by the Proximetry Agent Library to send statistics to the Cloud
- * Put here code responsible for sensor readings
+
+/* 
+ * Configuration Parameters setters 
  */
-void prox_stats_update(void) __attribute__((weak));
-void prox_stats_update(void) 
-{
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxStatNumber+1) %}
-		{%-if  middleware.tpl.stat_en(item) == "True" %}
-			{%- if middleware.tpl.stat_type(item) == "bool" %}
-    // Add here the code to get the {{middleware.tpl.stat_name(item)}} value from a sensor
-    // ...
-    bool stat_{{middleware.tpl.stat_name(item)}} = 0;
-			{% elif middleware.tpl.stat_type(item) == "int8" %}
-    // Add here the code to get the {{middleware.tpl.stat_name(item)}} value from a sensor
-    // ...
-    int8_t stat_{{ middleware.tpl.stat_name(item)}} = 0;
-			{% elif middleware.tpl.stat_type(item) == "int16" %}
-    // Add here the code to get the {{middleware.tpl.stat_name(item)}} value from a sensor
-    // ...
-    int16_t stat_{{ middleware.tpl.stat_name(item)}} = 0;
-			{% elif middleware.tpl.stat_type(item) == "int32" %}
-    // Add here the code to get the {{middleware.tpl.stat_name(item)}} value from a sensor
-    // ...
-    int32_t stat_{{ middleware.tpl.stat_name(item)}} = 0;
-			{% elif middleware.tpl.stat_type(item) == "uint8" %}
-    // Add here the code to get the {{middleware.tpl.stat_name(item)}} value from a sensor
-    // ...
-    uint8_t stat_{{ middleware.tpl.stat_name(item)}} = 0;
-			{% elif middleware.tpl.stat_type(item) == "uint16"%}
-    // Add here the code to get the {{middleware.tpl.stat_name(item)}} value from a sensor
-    // ...
-    uint16_t stat_{{ middleware.tpl.stat_name(item)}} = 0;
-			{% elif middleware.tpl.stat_type(item) == "uint32" %}
-    // Add here the code to get the {{middleware.tpl.stat_name(item)}} value from a sensor
-    // ...
-    uint32_t stat_{{ middleware.tpl.stat_name(item)}} = 0;
-			{% elif middleware.tpl.stat_type(item) == "float" %}
-    // Add here the code to get the {{middleware.tpl.stat_name(item)}} value from a sensor
-    // ...
-    float stat_{{ middleware.tpl.stat_name(item)}} = 0.0;
-			{% endif%}
-		{%- endif %}
-	{%- endfor %}
+{%- for param in params %}
+{{ param.tpl.define_setter() }}
 {%- endfor %}
 
-    //Write statistic values to the Proximetry Agent Library
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxStatNumber+1) %}
-		{%-if  middleware.tpl.stat_en(item) == "True" %}
-			{%- if middleware.tpl.stat_type(item) == "bool" %}
-    prox_write_stat_bool(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}},stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "int8" %}
-    prox_write_stat_i8(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}},stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "int16" %}
-    prox_write_stat_i16(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}},stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "int32" %}
-    prox_write_stat_i32(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}},stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "uint8" %}
-    prox_write_stat_u8(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}},stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "uint16"%}
-    prox_write_stat_u16(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}},stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "uint32" %}
-    prox_write_stat_u32(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}},stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "float" %}
-    prox_write_stat_float(PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}},stat_{{middleware.tpl.stat_name(item)}});
-			{%- else %}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
-{%- endfor %}
-
-{% for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxStatNumber+1) %}
-		{%-if  middleware.tpl.stat_en(item) == "True" %}
-			{%- if middleware.tpl.stat_type(item) == "bool" %}
-    PROX_LOG( "PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}: %d" EOL,(int)stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "int8" %}
-    PROX_LOG( "PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}: %d" EOL,(int)stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "int16" %}
-    PROX_LOG( "PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}: %d" EOL,(int)stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "int32" %}
-    PROX_LOG( "PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}: %d" EOL,(int)stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "uint8" %}
-    PROX_LOG( "PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}: %d" EOL,(int)stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "uint16"%}
-    PROX_LOG( "PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}: %d" EOL,(int)stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "uint32" %}
-    PROX_LOG( "PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}: %d" EOL,(int)stat_{{middleware.tpl.stat_name(item)}});
-			{%- elif middleware.tpl.stat_type(item) == "float" %}
-    PROX_LOG( "PROX_STAT_ID__{{middleware.tpl.stat_NAME(item)}}:"FLOAT_TO_INT_POINT_INT_FORMAT EOL,FLOAT_TO_INT_POINT_INT_VALUES(stat_{{middleware.tpl.stat_name(item)}}));
-			{%- else %}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
-{%- endfor %}
-
-}
-
-/**
- * @brief Set parameter values in the Proximetry Agent Library
- *
- * Put here code responsible for reading device configuration parameters
+/*
+ * Alerts setters 
  */
-int prox_conf_params_update(void) __attribute__((weak));
-int prox_conf_params_update(void) 
-{
-
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-    // Add here code to get the {{middleware.tpl.param_name(item)}} configuration parameter value
-    // ...
-			{%- if middleware.tpl.param_type(item) == "bool" %}
-    bool param_{{middleware.tpl.param_name(item)}} = 0;
-			{%elif middleware.tpl.param_type(item) == "int8" %}
-    int8_t param_{{ middleware.tpl.param_name(item)}} = 0;
-			{% elif middleware.tpl.param_type(item) == "int16" %}
-    int16_t param_{{ middleware.tpl.param_name(item)}} = 0;
-			{% elif middleware.tpl.param_type(item) == "int32" %}
-    int32_t param_{{ middleware.tpl.param_name(item)}} = 0;
-			{% elif middleware.tpl.param_type(item) == "uint8" %}
-    uint8_t param_{{ middleware.tpl.param_name(item)}} = 0;
-			{% elif middleware.tpl.param_type(item) == "uint16"%}
-    uint16_t param_{{ middleware.tpl.param_name(item)}} = 0;
-			{% elif middleware.tpl.param_type(item) == "uint32" %}
-    uint32_t param_{{ middleware.tpl.param_name(item)}} = 0;
-			{% elif middleware.tpl.param_type(item) == "float" %}
-    float param_{{ middleware.tpl.param_name(item)}} = 0.0;
-			{% elif middleware.tpl.param_type(item) == "string" %}
-    char *param_{{ middleware.tpl.param_name(item)}} = "";
-			{% endif%}
-		{%- endif %}
-	{%- endfor %}
+{%- for alert in alerts %}
+{{ alert.tpl.define_setters() }}
 {%- endfor %}
 
-    //Write configuration parameters values to the Proximetry Agent Library
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%- if middleware.tpl.param_type(item) == "bool" %}
-    prox_write_conf_param_bool(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int8" %}
-    prox_write_conf_param_i8(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int16" %}
-    prox_write_conf_param_i16(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int32" %}
-    prox_write_conf_param_i32(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint8" %}
-    prox_write_conf_param_u8(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint16"%}
-    prox_write_conf_param_u16(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint32" %}
-    prox_write_conf_param_u32(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "float" %}
-    prox_write_conf_param_float(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "string" %}
-    prox_write_conf_param_string(PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}},param_{{middleware.tpl.param_name(item)}});
-			{%- else %}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
-{%- endfor %}
-
-{% for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxParamNumber+1) %}
-		{%-if  middleware.tpl.param_en(item) == "True" %}
-			{%- if middleware.tpl.param_type(item) == "bool" %}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int8" %}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int16" %}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "int32" %}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint8" %}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint16"%}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "uint32" %}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %d" EOL,(int)param_{{middleware.tpl.param_name(item)}});
-			{%- elif middleware.tpl.param_type(item) == "float" %}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}:"FLOAT_TO_INT_POINT_INT_FORMAT EOL,FLOAT_TO_INT_POINT_INT_VALUES(param_{{middleware.tpl.param_name(item)}}));
-			{%- elif middleware.tpl.param_type(item) == "string" %}
-    PROX_LOG( "PROX_CONF_PARAM_ID__{{middleware.tpl.param_NAME(item)}}: %s" EOL,param_{{middleware.tpl.param_name(item)}});
-			{%- else %}
-			{%- endif%}
-		{%- endif %}
-	{%- endfor %}
-{%- endfor %}
-
-    prox_conf_param_set();
-
-    return 0;
-}
-
-/**
- * @brief Update alert states in the Proximetry Agent Library
- *
- * This routine is invoked by the Agent thread for updating alert states.
- * Add here code responsible for setting and clearing alerts.
+/*
+ * Configuration Parameter change callbacks 
  */
-void prox_alerts_update(void) __attribute__((weak));
-void prox_alerts_update(void)
-{
-    //Use the funtions below to set/clear particular alerts
-{%- for middleware in middlewares if middleware.tpl is not none %}
-	{%- for item in range(1,maxAlertNumber+1) %}
-		{%-if  middleware.tpl.alert_en(item) == "True" %}
-    //{{middleware.tpl.alert_name(item)}}
-    //if (<alert condition>)
-    //    prox_set_alert(PROX_ALERT_ID__{{middleware.tpl.alert_NAME(item)}}}});
-    //else
-    //    prox_clear_alert(PROX_ALERT_ID__{{middleware.tpl.alert_NAME(item)}}}});
-		{% endif %}
-	{%- endfor %}
+{%- for param in params %}
+{{ param.tpl.define_callback() }}
 {%- endfor %}
 
 
+/*
+ * Statistics callbacks 
+ */
+{%- for stat in stats %}
+{{ stat.tpl.define_callback() }}
+{%- endfor %}
+
+
+/*
+ * @brief
+ */
+void prox_stats_update(void)
+{
+{%- for stat in stats %}
+    {{ stat.tpl.get_stat_to_local_variable() }}
+{%- endfor %}
+
+    // Read and dump param values from the Proximetry Agent Library
+{%- for stat in stats %}
+    {{ stat.tpl.get_stat() }}
+{%- endfor %}
+{##}
+{%- for stat in stats %}
+    {{ stat.tpl.log_stat() }}
+{%- endfor %}
+
 }
 
-//##################################################################################################################################################
-//##################################################################################################################################################

@@ -51,9 +51,13 @@ uint32_t prox_str2bin_ip(const char *str);
 #define FLOAT_TO_INT_POINT_INT_FORMAT  		"%d.%d"
 #define FLOAT_TO_INT_POINT_INT_VALUES(x) 	(int)x,(int)((int)(x*10)%10)
 
+#ifndef UNUSED
 #define UNUSED(x) (void)(x)
+#endif
 
+#ifndef STR  
 #define STR(x) #x
 #define TOSTR(x) STR(x)
+#endif
 
 #endif // prox_helpers_h

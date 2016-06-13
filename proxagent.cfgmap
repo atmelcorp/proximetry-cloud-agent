@@ -12,6 +12,46 @@
 			<!-- <component name="WIFI:WINC:WINC1500"/> -->
 		</dependency>
     </middleware>
+
+    <middleware name="Proximetry Cloud Parameter">
+        <description>Prox Cloud Parameter Component</description>
+		<user-guide path="documentation/prox_param.rst"/>
+		<config-template path="templates/param/config.jinja2" target-path="prox_agent/prox_config.h"/>
+        <code-template path="templates/param/code.jinja2"/>
+		<required-component name="Cloud:Parameter:Proximetry"/>
+		<!-- <required-component name="WIFI:WINC:WINC1500"/> -->
+		<dependency label="Agent" reverse-label="Parameters">
+			<component api="Cloud:Agent:Proximetry"/>
+			<!-- <component name="WIFI:WINC:WINC1500"/> -->
+		</dependency>
+    </middleware>
+
+    <middleware name="Proximetry Cloud Statistic">
+        <description>Prox Cloud Statistic Component</description>
+		<user-guide path="documentation/prox_stat.rst"/>
+		<config-template path="templates/stat/config.jinja2" target-path="prox_agent/prox_config.h"/>
+        <code-template path="templates/stat/code.jinja2"/>
+		<required-component name="Cloud:Statistic:Proximetry"/>
+		<!-- <required-component name="WIFI:WINC:WINC1500"/> -->
+		<dependency label="Agent" reverse-label="Statistics">
+			<component api="Cloud:Agent:Proximetry"/>
+			<!-- <component name="WIFI:WINC:WINC1500"/> -->
+		</dependency>
+    </middleware>
+
+    <middleware name="Proximetry Cloud Alert">
+        <description>Prox Cloud Alert Component</description>
+		<user-guide path="documentation/prox_alert.rst"/>
+		<config-template path="templates/alert/config.jinja2" target-path="prox_agent/prox_config.h"/>
+        <code-template path="templates/alert/code.jinja2"/>
+		<required-component name="Cloud:Alert:Proximetry"/>
+		<!-- <required-component name="WIFI:WINC:WINC1500"/> -->
+		<dependency label="Agent" reverse-label="Alerts">
+			<component api="Cloud:Agent:Proximetry"/>
+			<!-- <component name="WIFI:WINC:WINC1500"/> -->
+		</dependency>
+    </middleware>
+
     <main>
 		<file-template path="templates/prox_agent.h.jinja2" target-path="prox_agent/prox_agent.h"/>
 		<file-template path="templates/prox_agent.c.jinja2" target-path="prox_agent/prox_agent.c"/>

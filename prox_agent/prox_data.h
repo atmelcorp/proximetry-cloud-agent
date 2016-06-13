@@ -37,6 +37,11 @@
 #define PROX_COMPONENT_VER       TOSTR(PROX_COMPONENT_VER_MAJOR)"."TOSTR(PROX_COMPONENT_VER_MINOR)"."TOSTR(PROX_COMPONENT_VER_REVISION)"."TOSTR(PROX_COMPONENT_VER_INSTANCE)"-as"
 
 /*
+ * @brief 
+ */
+void prox_check_and_init_0(void);
+
+/*
  * @brief Statically allocated variables for library
  */
 extern prox_vars_t prox_vars;
@@ -47,12 +52,12 @@ extern prox_vars_t prox_vars;
 void prox_conf_param_changed(uint32_t param_id);
 
 /**
- * @brief Update statistic values in the Proximetry Agent Library
+ * @brief Update statistic values in the Proximetry Agent Library cache
  */
 void prox_stats_update(void);
 
 /**
- * @brief Update alert states in the Proximetry Agent Library
+ * @brief Update alert states in the Proximetry Agent Library cache
  */
 void prox_alerts_update(void);
 

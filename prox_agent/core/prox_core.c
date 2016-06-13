@@ -52,8 +52,8 @@ static prox_callbacks_t prox_callbacks;
  * The device id should be unique for each device. The best candidate for the device_id is a mcu serial number.
  * Proximetry Device_ID is a max 100 chars width string.
  */
-const char *prox_get_device_id(void) __attribute__((weak));
-const char *prox_get_device_id(void)
+#pragma weak prox_callback__get_device_id
+const char *prox_callback__get_device_id(void)
 {
     static char device_serial_no[33];
 
@@ -78,8 +78,8 @@ const char *prox_get_device_id(void)
  *
  * If settings are in external storage the functions should implements corresponding code.
  */
-const char *prox_get_device_name(void) __attribute__((weak));
-const char *prox_get_device_name(void)
+#pragma weak prox_callback__get_device_name
+const char *prox_callback__get_device_name(void)
 {
     static char device_name[100];
     uint8_t mac[6];
@@ -96,8 +96,8 @@ const char *prox_get_device_name(void)
  *
  * If settings are in external storage the functions should implements corresponding code.
  */
-const char *prox_get_activation_code(void) __attribute__((weak));
-const char *prox_get_activation_code(void)
+#pragma weak prox_callback__get_activation_code
+const char *prox_callback__get_activation_code(void)
 {
     return PROX_ACTIVATION_CODE;
 }
@@ -107,7 +107,6 @@ const char *prox_get_activation_code(void)
  *
  * If settings are in external storage the functions should implements corresponding code.
  */
-unsigned int prox_get_sync_interval(void) __attribute__((weak));
 unsigned int prox_get_sync_interval(void)
 {
     return PROX_SYNC_INTERVAL;
@@ -120,10 +119,21 @@ unsigned int prox_get_sync_interval(void)
  *
  * If sync interval changes must be persistent the function should implements corresponding code.
  */
-void prox_set_sync_interval(uint32_t time_interval) __attribute__((weak));
 void prox_set_sync_interval(uint32_t time_interval)
 {
     prox_settings.sync_msg_interval = time_interval;
+}
+
+/*
+ * @brief
+ */
+#pragma weak prox_callback__time_ms
+uint64_t prox_callback__time_ms(void)
+{
+	printf("ERROR: %s default handler. It muse be redefined int the project"EOL,__FUNCTION__);
+	printf("HALT"EOL);
+	while(1)
+	  ;
 }
 
 
@@ -147,7 +157,7 @@ static void prox_dump_agent_config(void)
  * @brief Proximery Agent send message
  *
  * This routine is invokes by Proximetry Agent Library.
- * Agent utilizes this routine to send message
+ * Module utilizes this routine to send message
  */
 static int prox_send_msg(uint8_t *data, uint16_t size)
 {
@@ -212,7 +222,7 @@ static int prox_init_socket(void)
 /**
  * @brief Proximety Agent get socket funtion
  *
- * Function returns agent's socket indicator.
+ * Function returns module's socket descriptor.
  * If socket is not created the function creates it.
  *
  * @param[in]:	init	1 - re-initialize the socket
@@ -225,8 +235,55 @@ int prox_get_socket(bool init)
     return prox_sock;
 }
 
+/*
+ * This funtion is used if parameters initialization is issued before the prox_agent_init() procedur has been called.
+ */
+int prox_agent_init_0(void)
+{
+    /* fill the library initialization structure */
+    prox_settings.model_id          = PROX_DEVICE_MODEL;
+    prox_settings.software_ver      = PROX_MODEL_VER;
+	prox_settings.sync_msg_interval = prox_get_sync_interval();
+
+    prox_settings.activation_code   = prox_callback__get_activation_code();
+    prox_settings.device_id         = prox_callback__get_device_id();
+    prox_settings.device_name       = prox_callback__get_device_name();
+
+    prox_callbacks.conf_param_changed = prox_conf_param_changed;
+    prox_callbacks.send_msg           = prox_send_msg;
+    prox_callbacks.get_time_ms        = prox_callback__time_ms;
+    prox_callbacks.get_data 		  = prox_stats_update;
+
+    /* initialize Proximetry Agent Library*/
+    prox_init(&prox_settings, &prox_vars, &prox_callbacks);
+
+	return 0;
+}
+
+/*
+ * @brief Check wheter module is initialized.
+ *
+ * @param init - 0:return only initialization status 1:if not initialized do initialization
+ */
+bool prox_is_initialized(void)
+{
+	return prox_agent_initialized;
+}
+
+/*
+ * @brief
+ */
+void prox_check_and_init_0(void)
+{
+	if(!prox_is_initialized())
+	{
+		prox_set_log(PROX_LOG_DISABLE_E, NULL);
+		prox_agent_init_0();
+	}
+}
+
 /**
- * @brief Proximetry Agent Application initialization
+ * @brief Cloud Agent initialization
  *
  * Initializes the Proximetry Agent Library,
  * initializes the Proximetry Agent Application parameters.
@@ -234,43 +291,31 @@ int prox_get_socket(bool init)
 int prox_agent_init(void)
 {
     PROX_LOG("agent start:" EOL);
-    PROX_LOG("COMPONENT version: %s" EOL,PROX_COMPONENT_VER);
-    PROX_LOG("AGENT 	version: %s" EOL,PROX_AGENT_VER);
-    PROX_LOG("LIB   	version: %s" EOL,prox_get_library_version());
+    PROX_LOG("COMPONENT  version: %s" EOL,PROX_COMPONENT_VER);
+    PROX_LOG("AGENT      version: %s" EOL,prox_get_agent_version());
+    PROX_LOG("LIB        version: %s" EOL,prox_get_library_version());
 
     PROX_LOG("Cloud ip: %s" EOL,PROX_SERVER_IP);
 
 	// done from thw winc driver level
 	//prox_init_socket();
 
-    /* fill the library initialization structure */
-    prox_settings.model_id          = PROX_DEVICE_MODEL;
-    prox_settings.software_ver      = PROX_CAPFILE_VER;
-    prox_settings.sync_msg_interval = prox_get_sync_interval();
-
-    prox_settings.activation_code   = prox_get_activation_code();
-    prox_settings.device_id         = prox_get_device_id();
-    prox_settings.device_name       = prox_get_device_name();
-
-    prox_dump_agent_config();
-
-    prox_callbacks.conf_param_changed = prox_conf_param_changed;
-    prox_callbacks.send_msg           = prox_send_msg;
-    prox_callbacks.get_time_ms        = prox_time_ms;
-    prox_callbacks.get_data 		  = prox_stats_update;
-
-    prox_set_log(PROX_LOG_LEVEL, PROX_LOG_PREFIX);
+    prox_set_log(PROX_LOG_DEBUG_E, PROX_LOG_PREFIX);
+    /* prox_set_log(PROX_LOG_LEVEL, PROX_LOG_PREFIX); */
 
     /* initialize Proximetry Agent Library*/
-    prox_init(&prox_settings, &prox_vars, &prox_callbacks);
+	prox_agent_init_0();
 
     /* initialize the Proximetry Agent Application parameters*/
-    prox_conf_params_update();
+    prox_dump_agent_config();
+
+    prox_dump_conf_params();
 
     prox_agent_initialized = true;
 
     return 0;
 }
+
 
 /**
  * @brief Proximetry Agent application task (non-blocking)
@@ -288,7 +333,6 @@ void prox_agent_task(void)
         return;
     }
 
-    prox_alerts_update();
     prox_sync_task();
 }
 

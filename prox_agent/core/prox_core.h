@@ -48,9 +48,9 @@ int prox_agent_init(void);
 void prox_agent_task(void);
 
 /**
- * @brief Proximety Agent get socket funtion
+ * @brief Proximetry Agent get socket funtion
  *
- * Function returns agent's socket indicator.
+ * Function returns module's socket descriptor.
  * If socket is not created the function creates it.
  *
  * @param[in]:	init	1 - re-initialize the socket
@@ -58,10 +58,26 @@ void prox_agent_task(void);
 int prox_get_socket(bool init);
 
 /**
- * @brief Proximery Agent receive message
+ * @brief Proximetry Agent receive message
  *
- * This routine must by invoked by the system when a massage, for the Proximery Agent, arrived.
+ * This routine must by invoked by the system when a massage, for the Proximetry Agent, arrived.
  */
 void prox_recv_msg(uint8_t *buffer, size_t len);
 
+/**
+ * @brief Proximetry Agent get time
+ *
+ * This routine is invokes by Proximetry Agent Library.
+ * It must retrieves timestamp from the system.
+ *
+ */
+extern uint64_t prox_callback__time_ms(void);
+
+/*
+ * @brief 
+ */
+extern const char* prox_callback__get_device_id(void);
+extern const char* prox_callback__get_device_name(void);
+extern const char* prox_callback__get_activation_code(void);
+void prox_set_sync_interval(uint32_t time_interval);
 #endif /* prox_agent_h */

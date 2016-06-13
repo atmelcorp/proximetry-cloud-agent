@@ -5,6 +5,7 @@
 <description>This is the Proximetry Cloud Agent pack</description>
 <url>http://www.atmel.com</url>
 <releases>
+    <release version="3.0.0" date="2016-06-13">Split Component into Cloud Agent and Cloud Data Types separated components</release>
     <release version="2.0.2" date="2016-05-30">Platform independency,weak interface, 16 parameters.</release>
     <release version="2.0.1" date="2016-05-16">Cleanups.</release>
     <release version="2.0.0" date="2016-05-10">The Cloud Data Types configuration with the frontend form.</release>
@@ -14,12 +15,15 @@
 
 <conditions>
 	<condition id="Proximetry support">
+		<accept Dfamily="SAMD21"/>
+		<accept Dfamily="SAML21"/>
+		<accept Dfamily="SAML22"/>
 	</condition>
 </conditions>
 
 <components>
     <!-- <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support"> -->
-    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="2.0.2" condition="Proximetry support">
+    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="3.0.0" condition="Proximetry support">
         <description>This is the Proximetry Agent Component</description>
         <files>
 			<file category="library" name="prox_agent/lib/libprox.a"/>
@@ -36,6 +40,29 @@
             <file category="doc" name="documentation/prox_agent.rst"/>
         </files>
     </component>
+
+
+    <component Cclass="Cloud" Cgroup="Parameter"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+        <description>This is the Proximetry Agent Component</description>
+        <files>
+            <file category="doc" name="documentation/prox_param.rst"/>
+        </files>
+    </component>
+
+    <component Cclass="Cloud" Cgroup="Alert"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+        <description>This is the Proximetry Agent Component</description>
+        <files>
+            <file category="doc" name="documentation/prox_alert.rst"/>
+        </files>
+    </component>
+
+    <component Cclass="Cloud" Cgroup="Statistic"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+        <description>This is the Proximetry Agent Component</description>
+        <files>
+            <file category="doc" name="documentation/prox_stat.rst"/>
+        </files>
+    </component>
+
 
 	<component Cclass="Application" Cgroup="Atmel Cloud Proximetry Example" Cversion="0.0.1">
 		<description> Proximetry Cloud Agent Example </description>
