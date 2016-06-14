@@ -127,8 +127,8 @@ void prox_set_sync_interval(uint32_t time_interval)
 /*
  * @brief
  */
-#pragma weak prox_callback__time_ms
-uint64_t prox_callback__time_ms(void)
+#pragma weak prox_callback__get_time_ms
+uint64_t prox_callback__get_time_ms(void)
 {
 	printf("ERROR: %s default handler. It muse be redefined int the project"EOL,__FUNCTION__);
 	printf("HALT"EOL);
@@ -251,7 +251,7 @@ int prox_agent_init_0(void)
 
     prox_callbacks.conf_param_changed = prox_conf_param_changed;
     prox_callbacks.send_msg           = prox_send_msg;
-    prox_callbacks.get_time_ms        = prox_callback__time_ms;
+    prox_callbacks.get_time_ms        = prox_callback__get_time_ms;
     prox_callbacks.get_data 		  = prox_stats_update;
 
     /* initialize Proximetry Agent Library*/

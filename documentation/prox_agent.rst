@@ -90,8 +90,9 @@ Features
 
 Dependencies
 ------------
-* One UDP network socket is required
-* A function returning actual time with 1ms precision is required
+* One UDP network socket is required, 
+* A function returning actual time with 1ms precision is required,
+* STDIO for logging.
 
 Concurrency
 -----------

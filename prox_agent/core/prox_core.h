@@ -71,7 +71,7 @@ void prox_recv_msg(uint8_t *buffer, size_t len);
  * It must retrieves timestamp from the system.
  *
  */
-extern uint64_t prox_callback__time_ms(void);
+extern uint64_t prox_callback__get_time_ms(void);
 
 /*
  * @brief 

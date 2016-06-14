@@ -110,8 +110,13 @@ static void wifi_cb(uint8 u8MsgType, void *pvMsg)
 			sprintf(wifi_ip_str,"%u.%u.%u.%u", pu8IPAddress[0], pu8IPAddress[1], pu8IPAddress[2], pu8IPAddress[3]);
 			printf("Wi-Fi IP is %s\r\n",wifi_ip_str);
 			gbConnectedWifi = true;
+/******************** PROX: Initialize the Proximety Agent Socket *****************************************************************/
 			prox_get_socket(true);
+/**********************************************************************************************************************************/
+
+/******************** PROX: Push the Configuration Parameter: ip ******************************************************************/
 			prox_conf_param_push__ip(wifi_ip_str);
+/**********************************************************************************************************************************/
 			break;
 		}
 
@@ -161,14 +166,15 @@ uint64_t time_ms(void)
 	return timer_1ms;
 }
 
+/************ PROX: Callback utilizes by Cloud Agent module to get timestamp *****************************************************/
 /**
  * \brief function gives time stamp
  */
-
-uint64_t prox_callback__time_ms(void)
+uint64_t prox_callback__get_time_ms(void)
 {
 	return time_ms();
 }
+/**********************************************************************************************************************************/
 
 /**
  * \brief Timer 0 initialization
@@ -354,10 +360,13 @@ static void socket_layer_cb(SOCKET sock, uint8_t evt, void *msg)
 						/* ASSERT(len >= 0); */
 
 						recvfrom(sock, socket_recv_buff, MTU, 0);
+
+/*************** PROX: Service message reception for the Proximetry Agent *********************************************************/
 						if (sock == prox_get_socket(false))
 						{
 							prox_recv_msg(  (uint8_t *)datagram->pu8Buffer,len);
 						}
+/**********************************************************************************************************************************/
 
 						if (datagram->u16RemainingSize)
 						{
@@ -416,15 +425,70 @@ int16_t io1_read_illuminance_blk(void)
 	return (int16_t)((((uint32_t)4096 - voltage) * 66) / 4096);
 }
 
+/********* PROX: Proximetry Cloud Agent Get Statistics Callback definitions ***********************************************************/
+
+/*
+ * @brief Prox Cloud Agent statistic callback
+ */
+float prox_callback__get_io1_temp(void)
+{
+	return temperature_sensor_read(AT30TSE75X);
+}
+
+/*
+ * @brief Prox Cloud Agent statistic callback
+ */
+int32_t prox_callback__get_sw0(void)
+{
+	return (int32_t) gpio_get_pin_level(SW0) ? 0 : 1;
+}
+
+/*
+ * @brief Prox Cloud Agent statistic callback
+ */
+int32_t prox_callback__get_io1_ilum(void)
+{
+	return (int32_t)io1_read_illuminance_blk();
+}
+
+/*
+ * @brief Prox Cloud Agent statistic callback
+ */
+float prox_callback__get_rssi(void)
+{
+	return  (float)wifi_get_rssi_blk();
+}
+/**********************************************************************************************************************************/
+
+
+
+/********* PROX: Proximetry Cloud Agent Set Configuration Parameters Callback Definitions  ****************************************/
+/*
+ * @brief Prox Cloud Agent Configuration Parameters change  callback
+ */
+void prox_callback__set_led_freq(int32_t led_freq)
+{
+	set_led0_blinking_freq(led_freq);
+}
+
+/*
+ * @brief Prox Cloud Agent Configuration Parameters change  callback
+ */
+void prox_callback__set_led_onoff(int32_t led_onoff)
+{
+	if (led_onoff)
+		led0_on();
+	else
+		led0_off();
+}
+/**********************************************************************************************************************************/
+
 
 /**
  * @brief Set parameter values in the Proximetry Agent Library
- *
- * Put here code responsible for reading device configuration parameters
  */
 void prox_set_conf_params(void)
 {
-	prox_conf_param_push__mac(get_mac_str());
 	prox_conf_param_push__led_onoff(get_led0_service_state());
 	prox_conf_param_push__led_freq(get_led0_freq());
 }
@@ -435,7 +499,7 @@ void prox_set_conf_params(void)
  * This routine is invoked by the Agent thread for updating alert states.
  * Add here code responsible for setting and clearing alerts.
  */
-void prox_alerts_service(void)
+static void prox_alerts_service(void)
 {
 
 #define ALARM_OFF  false
@@ -489,14 +553,22 @@ int main(void)
 	tstrWifiInitParam param;
 	param.pfAppWifiCb = wifi_cb;
 	wifi_init(&param);
+/*********** PROX: Push the Configuration Parameter: mac ***************************************************************************/
+	prox_conf_param_push__mac((char*)get_mac_str());
+/***********************************************************************************************************************************/
 
 	/* Initialize Socket module */
 	socketInit();
 	registerSocketCallback(socket_layer_cb, NULL);
 
+/********** PROX: Proximetry Cloud Agent set Configuration Parameters **************************************************************/
+ // note that the configuration parameters settings can be asynchronously to agent initialization.
 	prox_set_conf_params();
+/***********************************************************************************************************************************/
 
+/********** PROX: Proximetry Cloud Agent initialization ****************************************************************************/
 	prox_agent_init();
+/***********************************************************************************************************************************/
 
 	while(1) {
 
@@ -504,7 +576,9 @@ int main(void)
 
 		if (gbConnectedWifi)
 		{
+/********** PROX: Proximetry Cloud Agent service task ******************************************************************************/
 				prox_agent_task();
+/***********************************************************************************************************************************/
 		}
 		else
 		{
@@ -518,7 +592,10 @@ int main(void)
 
 		led0_service();
 
+/********** PROX: Proximetry Cloud Agent Alerts handling ******************************************************************************/
+		//This function is a project's specific function
 		prox_alerts_service();
+/***********************************************************************************************************************************/
 
 	}
 
