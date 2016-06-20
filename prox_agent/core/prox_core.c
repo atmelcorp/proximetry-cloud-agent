@@ -25,7 +25,7 @@
  * */
 
 #include "../helpers/prox_helpers.h"
-#include "../prox_config.h"
+#include <prox_config.h>
 #include "../lib/prox.h"
 #include "../prox_data.h"
 #include "prox_core.h"
