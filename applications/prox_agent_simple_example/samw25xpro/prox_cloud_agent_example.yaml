@@ -668,8 +668,8 @@ pads:
     user_label: CONF_WINC_WAKE_PIN
     configuration: null
   CONF_WINC_EXT_INT_PIN:
-    name: PB04
-    definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PB04
+    name: PB09
+    definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21G18A-MU::pad::PB09
     mode: Digital input
     user_label: CONF_WINC_EXT_INT_PIN
     configuration: null
