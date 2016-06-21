@@ -47,7 +47,7 @@ stat_{{get_name()|lower}}
     {{stat_type_t}} {{get_local_variable_name() }} =  {{get_callback_name()}}();
 {%- endmacro %}
 
-{% macro get_callback_name() -%}
+{%- macro get_callback_name() -%}
 prox_callback__get_{{ get_name()|lower }}
 {%- endmacro %}
 
@@ -62,14 +62,14 @@ extern {{stat_type_t}} {{ get_callback_name() }}(void);
 {%- set stat_type = middleware.configuration.prox_stat_type -%}
 {% if 'int' in stat_type -%}
 	{%- set stat_type = stat_type+'_t' -%}
-{%- endif %}
+{%- endif -%}
 #pragma weak {{get_callback_name()}}
 {{stat_type}} {{ get_callback_name() }}(void)
 {
 	PROX_LOG("%s - default handler"EOL,__FUNCTION__);
 	return 0;
 }
-{%- endmacro %}
+{% endmacro %}
 
 {####  Misk  ####}
 {%- macro get_stat() -%}

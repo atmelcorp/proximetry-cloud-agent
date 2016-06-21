@@ -43,7 +43,7 @@ static bool led0 = true;
 static uint8_t socket_recv_buff[MTU] = {0};
 
 /**
- * \brief Obtain own MAC address as string
+ * \brief Gets Wi-Fi card MAC address
  *
  * \return MAC address
  */
@@ -62,7 +62,9 @@ const char *get_mac_str(void)
 }
 
 /**
- * \brief Callback to get the Wi-Fi status update.
+ * \brief Get Wi-Fi IP address
+ *
+ * \return IP address
  */
 const char *get_ip_str(void)
 {
@@ -70,7 +72,7 @@ const char *get_ip_str(void)
 }
 
 /**
- * \brief Obtain wifi connection status
+ * \brief Get Wi-Fi connection status
  */
 bool wifi_connected(void)
 {
@@ -110,13 +112,13 @@ static void wifi_cb(uint8 u8MsgType, void *pvMsg)
 			sprintf(wifi_ip_str,"%u.%u.%u.%u", pu8IPAddress[0], pu8IPAddress[1], pu8IPAddress[2], pu8IPAddress[3]);
 			printf("Wi-Fi IP is %s\r\n",wifi_ip_str);
 			gbConnectedWifi = true;
-/******************** PROX: Initialize the Proximety Agent Socket *****************************************************************/
-			prox_get_socket(true);
-/**********************************************************************************************************************************/
+/******************** PROX: Initialize Proximety Agent Socket *****************************************************/
+			prox_agent_get_socket(true);
+/******************************************************************************************************************/
 
-/******************** PROX: Push the Configuration Parameter: ip ******************************************************************/
+/******************** PROX: Push the IP address obtained from DHCP to the Proximetry Library **********************/
 			prox_conf_param_push__ip(wifi_ip_str);
-/**********************************************************************************************************************************/
+/******************************************************************************************************************/
 			break;
 		}
 
@@ -155,10 +157,9 @@ static void TIMER_0_task1_cb(const struct timer_task *const timer_task)
 }
 
 /**
- * @brief Proximetry Agent get time
+ * \brief Get time
  *
- * This routine is invokes by Proximetry Agent Library.
- * It must retrieves timestamp from the system.
+ * \return timestamp in milliseconds
  *
  */
 uint64_t time_ms(void)
@@ -166,15 +167,15 @@ uint64_t time_ms(void)
 	return timer_1ms;
 }
 
-/************ PROX: Callback utilizes by Cloud Agent module to get timestamp *****************************************************/
+/************ PROX: Callback used by the Proximetry Library to get timestamp **************************************/
 /**
- * \brief function gives time stamp
+ * \brief Function returns timestamp in milliseconds
  */
 uint64_t prox_callback__get_time_ms(void)
 {
 	return time_ms();
 }
-/**********************************************************************************************************************************/
+/******************************************************************************************************************/
 
 /**
  * \brief Timer 0 initialization
@@ -272,7 +273,9 @@ int connect_wifi(void)
 }
 
 /**
- * \brief Perform blocking rssi wifi request
+ * \brief Gets RSSI value from the Wi-Fi driver using a blocking request
+ *
+ * \return RSSI value
  */
 int8_t wifi_get_rssi_blk(void)
 {
@@ -314,7 +317,7 @@ static void socket_layer_cb(SOCKET sock, uint8_t evt, void *msg)
 			else
 			{
 				LOG(SOCKET_DBG "msg sending failed !!! " EOL);
-				/* Reset because of reinitalization socket problem */
+				/* Reset because of socket re-initialization problem */
 				_reset_mcu();
 			}
 		}
@@ -327,8 +330,7 @@ static void socket_layer_cb(SOCKET sock, uint8_t evt, void *msg)
 				LOG(SOCKET_DBG "BIND ok" EOL);
 				recvfrom(sock, socket_recv_buff, MTU, 0);
 			} else {
-				LOG(SOCKET_DBG "ERROR: bind!" EOL);
-				// TODO: add error handling ?
+				LOG(SOCKET_DBG "ERROR: bind!" EOL);				
 			}
 		}
 		break;
@@ -347,26 +349,21 @@ static void socket_layer_cb(SOCKET sock, uint8_t evt, void *msg)
 					if (memcmp(&current_sock_desc->remote.sin_addr.s_addr,
 					           &raddr[0],
 					           sizeof(current_sock_desc->remote.sin_addr.s_addr)) == 0)
-#endif
-					/*
-					 * INFO: server responses may come from any port
-					 */
+#endif					
 					{
-                        /* current_sock_desc->remote.sin_port = rport; */
-
-						LOG(SOCKET_DBG "INFO: received %d [B] from %u.%u.%u.%u:%u <========" EOL,
-							datagram->s16BufferSize, raddr[0], raddr[1], raddr[2], raddr[3], _ntohs(rport));
+                        LOG(SOCKET_DBG "INFO: received %d [B] from %u.%u.%u.%u:%u <========" EOL,
+						datagram->s16BufferSize, raddr[0], raddr[1], raddr[2], raddr[3], _ntohs(rport));
 						int16_t len = datagram->s16BufferSize;
 						/* ASSERT(len >= 0); */
 
 						recvfrom(sock, socket_recv_buff, MTU, 0);
 
-/*************** PROX: Service message reception for the Proximetry Agent *********************************************************/
-						if (sock == prox_get_socket(false))
+/*************** PROX: Handle message received from the Proximetry Portal *****************************************/
+						if (sock == prox_agent_get_socket(false))
 						{
-							prox_recv_msg(  (uint8_t *)datagram->pu8Buffer,len);
+							prox_agent_recv_msg(  (uint8_t *)datagram->pu8Buffer,len);
 						}
-/**********************************************************************************************************************************/
+/******************************************************************************************************************/
 
 						if (datagram->u16RemainingSize)
 						{
@@ -376,7 +373,7 @@ static void socket_layer_cb(SOCKET sock, uint8_t evt, void *msg)
 #if 0
 					else
 					{
-						/* packet not from server */
+						/* Received message not from Proximetry Portal */
 						SOCKET_DEBUG_LOG(SOCKET_DBG "WARNING: datagram from %u.%u.%u.%u:%u length: %u" EOL,
 							raddr[0], raddr[1], raddr[2], raddr[3], _ntohs(rport), datagram->s16BufferSize);
 					}
@@ -425,10 +422,10 @@ int16_t io1_read_illuminance_blk(void)
 	return (int16_t)((((uint32_t)4096 - voltage) * 66) / 4096);
 }
 
-/********* PROX: Proximetry Cloud Agent Get Statistics Callback definitions ***********************************************************/
+/********* PROX: Callbacks used by the Proximetry Agent to get Statistic values **********************************/
 
 /*
- * @brief Prox Cloud Agent statistic callback
+ * @brief Proximetry Agent get io1_temp statistic callback
  */
 float prox_callback__get_io1_temp(void)
 {
@@ -436,7 +433,7 @@ float prox_callback__get_io1_temp(void)
 }
 
 /*
- * @brief Prox Cloud Agent statistic callback
+ * @brief Proximetry Agent get sw0 statistic callback
  */
 int32_t prox_callback__get_sw0(void)
 {
@@ -444,7 +441,7 @@ int32_t prox_callback__get_sw0(void)
 }
 
 /*
- * @brief Prox Cloud Agent statistic callback
+ * @brief Proximetry Agent get ilum statistic callback
  */
 int32_t prox_callback__get_io1_ilum(void)
 {
@@ -452,19 +449,19 @@ int32_t prox_callback__get_io1_ilum(void)
 }
 
 /*
- * @brief Prox Cloud Agent statistic callback
+ * @brief Proximetry Agent get rssi statistic callback
  */
 float prox_callback__get_rssi(void)
 {
 	return  (float)wifi_get_rssi_blk();
 }
-/**********************************************************************************************************************************/
+/******************************************************************************************************************/
 
 
 
-/********* PROX: Proximetry Cloud Agent Set Configuration Parameters Callback Definitions  ****************************************/
+/********* PROX: Callbacks used by the Proximetry Agent to set Configuration Parameters  **************************/
 /*
- * @brief Prox Cloud Agent Configuration Parameters change  callback
+ * @brief Proximetry Agent Configuration Parameters change callback
  */
 void prox_callback__set_led_freq(int32_t led_freq)
 {
@@ -472,7 +469,7 @@ void prox_callback__set_led_freq(int32_t led_freq)
 }
 
 /*
- * @brief Prox Cloud Agent Configuration Parameters change  callback
+ * @brief Proximetry Agent Configuration Parameters change callback
  */
 void prox_callback__set_led_onoff(int32_t led_onoff)
 {
@@ -481,23 +478,23 @@ void prox_callback__set_led_onoff(int32_t led_onoff)
 	else
 		led0_off();
 }
-/**********************************************************************************************************************************/
+/******************************************************************************************************************/
 
 
 /**
- * @brief Set parameter values in the Proximetry Agent Library
+ * @brief Pushes parameter values to the Proximetry Library
  */
-void prox_set_conf_params(void)
+static void prox_push_conf_params(void)
 {
 	prox_conf_param_push__led_onoff(get_led0_service_state());
 	prox_conf_param_push__led_freq(get_led0_freq());
 }
 
 /**
- * @brief Update alert states in the Proximetry Agent Library
+ * @brief Updates Alert states in the Proximetry Library
  *
- * This routine is invoked by the Agent thread for updating alert states.
- * Add here code responsible for setting and clearing alerts.
+ * This function is called by the Agent thread to update Alert states.
+ * Add here code responsible for setting and clearing Alerts.
  */
 static void prox_alerts_service(void)
 {
@@ -553,22 +550,21 @@ int main(void)
 	tstrWifiInitParam param;
 	param.pfAppWifiCb = wifi_cb;
 	wifi_init(&param);
-/*********** PROX: Push the Configuration Parameter: mac ***************************************************************************/
+/*********** PROX: Push the MAC address to the Proximetry Library **************************************************/
 	prox_conf_param_push__mac((char*)get_mac_str());
-/***********************************************************************************************************************************/
+/******************************************************************************************************************/
 
 	/* Initialize Socket module */
 	socketInit();
 	registerSocketCallback(socket_layer_cb, NULL);
 
-/********** PROX: Proximetry Cloud Agent set Configuration Parameters **************************************************************/
- // note that the configuration parameters settings can be asynchronously to agent initialization.
-	prox_set_conf_params();
-/***********************************************************************************************************************************/
+/********** PROX: Push the Configuration Parameters to the Proximetry Library *************************************/
+ 	prox_push_conf_params();
+/******************************************************************************************************************/
 
-/********** PROX: Proximetry Cloud Agent initialization ****************************************************************************/
+/********** PROX: Proximetry Agent initialization *****************************************************************/
 	prox_agent_init();
-/***********************************************************************************************************************************/
+/******************************************************************************************************************/
 
 	while(1) {
 
@@ -576,9 +572,9 @@ int main(void)
 
 		if (gbConnectedWifi)
 		{
-/********** PROX: Proximetry Cloud Agent service task ******************************************************************************/
+/********** PROX: Proximetry Agent service task *******************************************************************/
 				prox_agent_task();
-/***********************************************************************************************************************************/
+/******************************************************************************************************************/
 		}
 		else
 		{
@@ -592,10 +588,9 @@ int main(void)
 
 		led0_service();
 
-/********** PROX: Proximetry Cloud Agent Alerts handling ******************************************************************************/
-		//This function is a project's specific function
+/********** PROX: Proximetry Agent Alerts service *****************************************************************/		
 		prox_alerts_service();
-/***********************************************************************************************************************************/
+/******************************************************************************************************************/
 
 	}
 

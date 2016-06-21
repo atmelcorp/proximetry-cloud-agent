@@ -22,7 +22,7 @@
 
 /**
  * @file prox_agent.c
- * @brief Proximetry Cloud Agent - Application
+ * @brief Proximetry Agent - Application
  */
 
 #include "helpers/prox_helpers.h"
@@ -60,7 +60,7 @@
  * This application does not use dynamic memory allocation, all STRING configuration parameters must be statically allocated below.
  */
 
-/* Statically allocated memory for string parameters */
+/* Statically allocated memory for string configuration parameters */
 static struct str_agent_params_s
 {
 {%- for param_string in params_string %}
@@ -70,10 +70,11 @@ static struct str_agent_params_s
 {%- endif %}
 
 /**
- * @brief Definitions of configuration parameters
+ * @brief Configuration Parameters definitions
  *
- * To define a configuration parameter, a param_id and proper PROX_<TYPE>_CONF_CONF_PARAM_DEF macro should be used.
- * For STRING parameters the statically allocated memory reference must be provided.
+ * To define a Configuration Parameter apprropriate PROX_<TYPE>_CONF_CONF_PARAM_DEF macro should be used.
+ * The macro requires to provide the Configuration Parameter ID. For STRING parameters a statically allocated memory reference must be provided.
+ *
  * */
 static prox_conf_param_t params[] = {
 {%- for param in params %}
@@ -82,9 +83,11 @@ static prox_conf_param_t params[] = {
 };
 
 /**
- * @brief Definitions of statistics
+ * @brief Statistics definitions
  *
- * To define a statistic, a stat_id and proper PROX_<TYPE>_STAT_DEF macro should be used.
+ * To define a Statistic apprropriate PROX_<TYPE>_STAT_DEF macro should be used.
+ * The macro requires to provide the Statistic ID.
+ *
  * */
 static prox_stat_t stats[] =
 {
@@ -94,9 +97,11 @@ static prox_stat_t stats[] =
 };
 
 /**
- * @brief Definitions of alerts
+ * @brief Alerts definitions
  *
- * To define an alert, an alert_id and PROX_ALERT_DEF macro should be used.
+ * To define an Alert PROX_ALERT_DEF macro should be used.
+ * The macro requires to provide the Alert ID.
+ *
  * */
 static prox_alert_t alerts[] =
 {
@@ -106,7 +111,7 @@ static prox_alert_t alerts[] =
 };
 
 /**
- * Internal storage for configuration parameters, statistics and alerts.
+ * Internal storage for Configuration Parameters, Statistics and Alerts.
  *
  * */
 prox_vars_t prox_vars =
@@ -123,8 +128,8 @@ prox_vars_t prox_vars =
 /*                                       misc routines                                                                    */
 /********************************************************************************************************************************/
 
-/*
- * @brief
+/**
+ * @brief Returns the Proximetry Agent version string
  */
 char* prox_get_agent_version(void)
 {
@@ -132,7 +137,7 @@ char* prox_get_agent_version(void)
 }
 
 /**
- * @brief Prints the Proximetry Agent Application configuration parameters
+ * @brief Prints the Proximetry Agent Application Configuration Parameters
  */
 void prox_dump_conf_params(void)
 {
@@ -145,7 +150,7 @@ void prox_dump_conf_params(void)
     char tmp_str[PROX_CONF_PARAM_STR_LEN];
 {% endif %}
 
-    // Read and dump param values from the Proximetry Agent Library
+    // Read and print Configuration Parameter values from the Proximetry Library
 {% for param in params %}
     {{ param.tpl.read_and_log('tmp_str') }}
 {% endfor %}
@@ -154,8 +159,8 @@ void prox_dump_conf_params(void)
 /**
  * @brief Parameter changed callback function
  *
- * This function is invoked by the Proximetry Agent Library, as a callback, when a configuration parameter has been changed from the Cloud service.
- * Here is the place for adding the logic related to the configuration parameter modification .
+ * This function is invoked by the Proximetry Library, as a callback, when a Configuration Parameter modification is received from the Proximetry Portal.
+ *
  */
 void prox_conf_param_changed(uint32_t param_id)
 {
@@ -190,51 +195,68 @@ void prox_conf_param_changed(uint32_t param_id)
     }
 }
 
-
-/* 
- * Configuration Parameters setters 
+{% for param in params %}
+/**
+ * @brief Configuration Parameters pusher
+ *
+ * Use this function to push {{param.tpl.get_name()}} value to the Proximetry Portal
  */
-{%- for param in params %}
 {{ param.tpl.define_setter() }}
-{%- endfor %}
+{% endfor %}
 
-/*
- * Alerts setters 
- */
 {%- for alert in alerts %}
-{{ alert.tpl.define_setters() }}
+/**
+ * @brief Alert setter: set
+ *
+ * Use this function to set {{alert.tpl.get_name()}} Alert
+ */
+{{ alert.tpl.define_setters_set() }}
+
+/**
+ * @brief Alert setter: clear
+ *
+ * Use this function to clear {{alert.tpl.get_name()}} Alert
+ */
+{{ alert.tpl.define_setters_clear() }}
 {%- endfor %}
 
-/*
- * Configuration Parameter change callbacks 
+{%- for param in params_editable %}
+/**
+ * @brief Configuration Parameter change callback
+ *
+ * This function is called by the application when {{param.tpl.get_name()}} value change request is received from the Proximetry Portal.
  */
-{%- for param in params %}
 {{ param.tpl.define_callback() }}
 {%- endfor %}
 
 
-/*
- * Statistics callbacks 
- */
 {%- for stat in stats %}
+/**
+ * @brief Statistic callback
+ *
+ * This function is called by the application to get {{stat.tpl.get_name()}} value
+ */
 {{ stat.tpl.define_callback() }}
 {%- endfor %}
 
-
 /*
- * @brief
+ * @brief Update Statistic data
+ *
+ *  This functian is called by the Proximetry Library to get Statistics data.
  */
 void prox_stats_update(void)
 {
+    // Get Statistics data
 {%- for stat in stats %}
     {{ stat.tpl.get_stat_to_local_variable() }}
 {%- endfor %}
 
-    // Read and dump param values from the Proximetry Agent Library
+    // Write Statistics data to the Proximetry Library
 {%- for stat in stats %}
     {{ stat.tpl.get_stat() }}
 {%- endfor %}
-{##}
+
+    // Print collected values
 {%- for stat in stats %}
     {{ stat.tpl.log_stat() }}
 {%- endfor %}

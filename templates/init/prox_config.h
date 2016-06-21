@@ -1,9 +1,9 @@
 // ******************************************************************************************
-// <h> Cloud Server Settings
+// <h> Proximetry Portal Settings
 // ******************************************************************************************
 
 // <s> Activation code
-// <i> Code associated with a cloud user account
+// <i> Code associated with a Proximetry Portal user account
 // <id> prox_activation_code
 #define PROX_ACTIVATION_CODE "PUT YOUR ACTIVATION CODE HERE"
 
@@ -20,12 +20,12 @@
 #define PROX_DEVICE_NAME "SAMD21_STARTNAME"
 
 // <o> Device model id <0x0-0xFFFFFFFF>
-// <i> The Device Model Id is crucial and must be consistent with a Device Model Id deployed on the server side 
+// <i> The Device Model Id is crucial and must be consistent with a Device Model Id deployed on the Proximetry Portal
 // <id> prox_device_model_id
 #define PROX_DEVICE_MODEL_ID 0x00000000
 
 // <o> Device model version <0-1000>
-// <i> The Device Model Version is crucial and must be consistent with a Device Model Version deployed on the server side 
+// <i> The Device Model Version is crucial and must be consistent with a Device Model Version deployed on the Proximetry Portal
 // <id> prox_device_model_version
 #define PROX_DEVICE_MODEL_VERSION 0
 
@@ -39,10 +39,10 @@
 //the sending synchronous message interval
 #define PROX_SYNC_INTERVAL 10
 
-// Cloud server port number
+// Proximetry Portal port number
 #define PROX_PORT 5050
 
-// Cloud server ip address
+// Proximetry Portal ip address
 #define PROX_SERVER_IP "54.191.88.84"
 
 
@@ -53,7 +53,7 @@
 #ifndef PROX_LOGGING
 	/* Uncomment to enable the logging */
 	#define PROX_LOGGING
-#endif 
+#endif
 
 #ifdef PROX_LOGGING
 	#define PROX_LOG_PREFIX "prox: "

@@ -5,6 +5,7 @@
 <description>This is the Proximetry Cloud Agent pack</description>
 <url>http://www.atmel.com</url>
 <releases>
+    <release version="3.1.0" date="2016-06-13">Refactoring and cleanups</release>
     <release version="3.0.0" date="2016-06-13">Split Component into Cloud Agent and Cloud Data Types separated components</release>
     <release version="2.0.2" date="2016-05-30">Platform independency,weak interface, 16 parameters.</release>
     <release version="2.0.1" date="2016-05-16">Cleanups.</release>
@@ -22,8 +23,7 @@
 </conditions>
 
 <components>
-    <!-- <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support"> -->
-    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="3.0.0" condition="Proximetry support">
+    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="3.1.0" condition="Proximetry support">
         <description>This is the Proximetry Agent Component</description>
         <files>
 			<file category="library" name="prox_agent/lib/libprox.a"/>

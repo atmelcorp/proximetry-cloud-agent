@@ -21,11 +21,11 @@
 
 /**
  * @file prox_core.c
- * @brief Proximetry Cloud Agent - Platform specific code
+ * @brief Proximetry Agent - Platform specific code
  * */
 
 #include "../helpers/prox_helpers.h"
-#include <prox_config.h>
+#include "../prox_config.h"
 #include "../lib/prox.h"
 #include "../prox_data.h"
 #include "prox_core.h"
@@ -40,7 +40,7 @@ static struct sockaddr_in remote;
 static bool prox_agent_initialized = false;
 
 /**
- * @brief Proximetry Agent settings structures
+ * @brief Proximetry Agent configuration
  * */
 static prox_settings_t prox_settings;
 static prox_callbacks_t prox_callbacks;
@@ -48,9 +48,9 @@ static prox_callbacks_t prox_callbacks;
 /**
  * @brief Proximetry Agent get device id
  *
- * This function is utilizes by an agent to get the device id.
- * The device id should be unique for each device. The best candidate for the device_id is a mcu serial number.
- * Proximetry Device_ID is a max 100 chars width string.
+ * This function is used by the Proximetry Agent to get a Device ID.
+ * Device ID should be unique for each device.
+ * Proximetry Device ID can have up to 100 chars.
  */
 #pragma weak prox_callback__get_device_id
 const char *prox_callback__get_device_id(void)
@@ -73,10 +73,9 @@ const char *prox_callback__get_device_id(void)
 /**
  * @brief Proximetry Agent get a device name
  *
- * This function is utilizes by an agent to get the device name which will be reported to cloud server.
- * Proximetry Device Name is a max 32 chars width string;
+ * This function is used by the Proximetry Agent to get a Device name
+ * Proximetry Device Name can have up to 32 chars
  *
- * If settings are in external storage the functions should implements corresponding code.
  */
 #pragma weak prox_callback__get_device_name
 const char *prox_callback__get_device_name(void)
@@ -94,7 +93,6 @@ const char *prox_callback__get_device_name(void)
 /**
  * @brief Proximetry Agent get an activation code
  *
- * If settings are in external storage the functions should implements corresponding code.
  */
 #pragma weak prox_callback__get_activation_code
 const char *prox_callback__get_activation_code(void)
@@ -104,10 +102,9 @@ const char *prox_callback__get_activation_code(void)
 
 /**
  * @brief Proximetry Agent get a synchronization interval value
- *
- * If settings are in external storage the functions should implements corresponding code.
+ * @return Periodic message reporting interval value in seconds
  */
-unsigned int prox_get_sync_interval(void)
+static unsigned int get_sync_interval(void)
 {
     return PROX_SYNC_INTERVAL;
 }
@@ -115,17 +112,20 @@ unsigned int prox_get_sync_interval(void)
 /**
  * @brief Proximetry Agent set a synchronization interval value
  *
- * This function should be used if sync interval has to be changed in runtime.
+ * This function is used to change the periodic reporting interval in runtime.
  *
- * If sync interval changes must be persistent the function should implements corresponding code.
  */
-void prox_set_sync_interval(uint32_t time_interval)
+void prox_agent_set_sync_interval(uint32_t time_interval)
 {
-    prox_settings.sync_msg_interval = time_interval;
+	prox_set_sync_interval(time_interval);
 }
 
-/*
- * @brief
+/**
+ * @brief Proximetry Agent get time
+ *
+ * This function is called by the Proximetry Library.
+ * It must return a timestamp in miliseconds
+ *
  */
 #pragma weak prox_callback__get_time_ms
 uint64_t prox_callback__get_time_ms(void)
@@ -146,7 +146,7 @@ static void prox_dump_agent_config(void)
     PROX_LOG("   Device id:         %s" EOL, prox_settings.device_id);
     PROX_LOG("   Device name:       %s" EOL, prox_settings.device_name);
     PROX_LOG("   Model id:          0x%X" EOL, (int)prox_settings.model_id);
-    PROX_LOG("   Software ver:      0x%X" EOL, (int)prox_settings.software_ver);
+    PROX_LOG("   Model ver:         0x%X" EOL, (int)prox_settings.model_ver);
     PROX_LOG("   Sync.msg.interval  %d" EOL, prox_settings.sync_msg_interval);
     PROX_LOG("   Activation code:   %s" EOL, prox_settings.activation_code);
     PROX_LOG("   Cloud Server ip:   %s" EOL, PROX_SERVER_IP);
@@ -156,8 +156,7 @@ static void prox_dump_agent_config(void)
 /**
  * @brief Proximery Agent send message
  *
- * This routine is invokes by Proximetry Agent Library.
- * Module utilizes this routine to send message
+ * This routine is called by Proximetry Library to send messages
  */
 static int prox_send_msg(uint8_t *data, uint16_t size)
 {
@@ -168,9 +167,9 @@ static int prox_send_msg(uint8_t *data, uint16_t size)
 /**
  * @brief Proximery Agent receive message
  *
- * This routine must by invoked by the system when a massage, for the Proximery Agent, arrived.
+ * This routine must be invoked by the system when a massage from the Proximery Portal is received
  */
-void prox_recv_msg(uint8_t *buffer, size_t len)
+void prox_agent_recv_msg(uint8_t *buffer, size_t len)
 {
     prox_process_msg((uint8_t*)buffer,len);
 }
@@ -227,7 +226,7 @@ static int prox_init_socket(void)
  *
  * @param[in]:	init	1 - re-initialize the socket
  */
-int prox_get_socket(bool init)
+int prox_agent_get_socket(bool init)
 {
     if (prox_sock == -1 || init)
         prox_init_socket();
@@ -235,15 +234,15 @@ int prox_get_socket(bool init)
     return prox_sock;
 }
 
-/*
- * This funtion is used if parameters initialization is issued before the prox_agent_init() procedur has been called.
+/**
+ * @brief Initalize Proximetry Library
  */
-int prox_agent_init_0(void)
+static int prox_agent_lib_init(void)
 {
     /* fill the library initialization structure */
-    prox_settings.model_id          = PROX_DEVICE_MODEL;
-    prox_settings.software_ver      = PROX_MODEL_VER;
-	prox_settings.sync_msg_interval = prox_get_sync_interval();
+    prox_settings.model_id            = PROX_DEVICE_MODEL;
+    prox_settings.model_ver           = PROX_MODEL_VER;
+    prox_settings.sync_msg_interval   = get_sync_interval();
 
     prox_settings.activation_code   = prox_callback__get_activation_code();
     prox_settings.device_id         = prox_callback__get_device_id();
@@ -254,13 +253,13 @@ int prox_agent_init_0(void)
     prox_callbacks.get_time_ms        = prox_callback__get_time_ms;
     prox_callbacks.get_data 		  = prox_stats_update;
 
-    /* initialize Proximetry Agent Library*/
+    /* initialize Proximetry Library*/
     prox_init(&prox_settings, &prox_vars, &prox_callbacks);
 
 	return 0;
 }
 
-/*
+/**
  * @brief Check wheter module is initialized.
  *
  * @param init - 0:return only initialization status 1:if not initialized do initialization
@@ -270,22 +269,24 @@ bool prox_is_initialized(void)
 	return prox_agent_initialized;
 }
 
-/*
- * @brief
+/**
+ * @brief Check if agent is initialized and init Agent Library if not.
+ *
+ * This function is called by the Proximetry Agent API setters to make sure that the Proximetry Library is properly initialized
  */
-void prox_check_and_init_0(void)
+void prox_check_and_lib_init(void)
 {
 	if(!prox_is_initialized())
 	{
 		prox_set_log(PROX_LOG_DISABLE_E, NULL);
-		prox_agent_init_0();
+		prox_agent_lib_init();
 	}
 }
 
 /**
- * @brief Cloud Agent initialization
+ * @brief Proximetry Agent initialization
  *
- * Initializes the Proximetry Agent Library,
+ * Initializes the Proximetry Library,
  * initializes the Proximetry Agent Application parameters.
  */
 int prox_agent_init(void)
@@ -303,8 +304,8 @@ int prox_agent_init(void)
     prox_set_log(PROX_LOG_DEBUG_E, PROX_LOG_PREFIX);
     /* prox_set_log(PROX_LOG_LEVEL, PROX_LOG_PREFIX); */
 
-    /* initialize Proximetry Agent Library*/
-	prox_agent_init_0();
+    /* initialize Proximetry Library*/
+    prox_agent_lib_init();
 
     /* initialize the Proximetry Agent Application parameters*/
     prox_dump_agent_config();
@@ -320,10 +321,9 @@ int prox_agent_init(void)
 /**
  * @brief Proximetry Agent application task (non-blocking)
  *
- * Updates the alerts states in the Proximetry Agent Library,
- * performs the agent functionality,
+ * performs the Proximetry Agent functionality,
  *
- * It should be periodically invoked by the main task, at least once per sync message interval.
+ * This function must be periodically invoked by the application. It should be called at least once per periodic reporting interval.
  */
 void prox_agent_task(void)
 {

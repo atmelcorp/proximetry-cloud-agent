@@ -21,23 +21,23 @@
 PROX_ALERT_DEF({{ get_id_define() }})
 {%- endmacro %}
 
-
 {% macro declare_setters() -%}
 void prox_alert_set__{{ get_name()|lower }}(void);
 void prox_alert_clear__{{ get_name()|lower }}(void);
 {%- endmacro %}
 
-{% macro define_setters() -%}
+{% macro define_setters_set() -%}
 void prox_alert_set__{{ get_name()|lower }}(void)
 {
     prox_clear_alert({{get_id_define()}});
 }
+{% endmacro %}
 
+{% macro define_setters_clear() -%}
 void prox_alert_clear__{{ get_name()|lower }}(void)
 {
     prox_set_alert({{get_id_define()}});
 }
-{%- endmacro %}
+{% endmacro %}
 
 
-{#  WBWBW  END #}

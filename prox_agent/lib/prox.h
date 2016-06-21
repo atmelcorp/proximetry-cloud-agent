@@ -22,7 +22,7 @@
 /**
  * @file prox.h
  *
- * @brief Proximetry Cloud Agent Library - Programming Interface
+ * @brief Proximetry Library - Programming Interface
  */
 
 #ifndef __PROX_H__
@@ -34,10 +34,10 @@
 #include "prox_api.h"
 
 /*----------------------------------------------------------------------------
- * Version 2.0.1
+ * Version 2.3.0
  *----------------------------------------------------------------------------*/
 
-// Proximetry Agent Library static configuration. Fixed for a library instance.
+// Proximetry Library static configuration. Fixed for a library instance.
 // This mean that for compiled library package these are here for information purpose only.
 // #define PROX_CFG_MTU 1500            /* @brief MTU of underlying network protocol */
 
@@ -52,9 +52,9 @@ typedef enum
 }prox_log_level_t;
 
 /*----------------------------------------------------------------------------*/
-// Proximetry Agent Library data types
+// Proximetry Library data types
 /**
- * @brief Type for storing information about data type
+ * @brief Enum defining supported data types
  */
 typedef enum
 {
@@ -71,7 +71,7 @@ typedef enum
 } prox_type_t;
 
 /**
- * @brief Type for storing data of multiple types
+ * @brief Union for storing different value types
  */
 typedef union
 {
@@ -87,7 +87,7 @@ typedef union
 } prox_value_t;
 
 /**
- * @brief Abstract type for storing data of any type
+ * @brief Abstract type for storing different data objects
  */
 typedef struct
 {
@@ -98,17 +98,17 @@ typedef struct
 } prox_data_t;
 
 /**
- * @brief Type for storing statistics data
+ * @brief Type for Statistic data
  */
 typedef prox_data_t prox_stat_t;
 
 /**
- * @brief Type for storing configuration parameters data
+ * @brief Type for Configuration Parameter data
  */
 typedef prox_data_t prox_conf_param_t;
 
 /**
- * @brief Type for storing alerts
+ * @brief Enum defining Alert states
  */
 typedef enum
 {
@@ -118,7 +118,7 @@ typedef enum
 } prox_alert_state_t;
 
 /**
- * @brief Type for storing alerts data
+ * @brief Type for Alert data
  */
 typedef struct
 {
@@ -129,21 +129,21 @@ typedef struct
 } prox_alert_t;
 
 /**
- * @brief A structure to represent embedded system information
+ * @brief A structure containig basic application configuration data required to initialize the Proximetry Library
  */
 typedef struct
 {
 	const char *device_id;         /**< @brief device ID */
 	const char *device_name;       /**< @brief device name */
 	uint32_t    model_id;          /**< @brief device model ID */
-	uint16_t    software_ver;      /**< @brief software version */
-	int         sync_msg_interval; /**< @brief sync message interval [s] */
+	uint16_t    model_ver;         /**< @brief device model version ID */
+	int         sync_msg_interval; /**< @brief periodic message reporting interval in [s] */
 	const char *activation_code;   /**< @brief activation code */
 
 } prox_settings_t;
 
 /**
- * @brief A structure to represent embedded device api
+ * @brief A structure containig callback definitions required to initialize the Proximetry Library
  */
 typedef struct
 {
@@ -154,7 +154,7 @@ typedef struct
 } prox_callbacks_t;
 
 /**
- * @brief A structure to represent embedded system reportable data
+ * @brief A structure containig application data definitions required to initialize the Proximetry Library  
  */
 typedef struct
 {
@@ -171,7 +171,7 @@ typedef struct
 
 
 /*----------------------------------------------------------------------------*/
-// Proximetry Agent Library macros
+// Proximetry Library macros
 /**
  * @brief Define bool parameter
  * Use this macro to initialize bool params in parameters memory buffer
@@ -301,7 +301,7 @@ typedef struct
 
 
 /*----------------------------------------------------------------------------*/
-// Proximetry Agent Library functions
+// Proximetry Library functions
 
 /**
  * @brief Set a logging level and a prefix 
@@ -309,17 +309,22 @@ typedef struct
 int prox_set_log(prox_log_level_t level, const char *prefix);
 
 /**
- * @brief Initialize the Proximetry Agent Library
+ * @brief Initialize the Proximetry Library
  */
 int prox_init(prox_settings_t *settings, prox_vars_t *vars, prox_callbacks_t *device_api);
 
 /**
- * @brief Processing a Proximetry Protocol Message
+ * @brief Set a Proximetry Agent sync interval
+ */
+int prox_set_sync_interval(int sync_interval);
+
+/**
+ * @brief Process a Proximetry protocol message
  */
 void prox_process_msg(uint8_t *msg, uint16_t size);
 
 /**
- * @brief Performs synchronous agent task
+ * @brief Performs synchronous Agent task
  */
 void prox_sync_task(void);
 

@@ -21,7 +21,7 @@
 
 /**
  * @file prox_core.h
- * @brief Proximetry Cloud Agent - System Interface
+ * @brief Proximetry Agent - System Interface
  * */
 
 #ifndef prox_agent_h
@@ -32,7 +32,7 @@
 /**
  * @brief Proximetry Agent Application initialization
  *
- * Initializes the Proximetry Agent Library,
+ * Initializes the Proximetry Library,
  * initializes the Proximetry Agent Application parameters.
  */
 int prox_agent_init(void);
@@ -40,10 +40,9 @@ int prox_agent_init(void);
 /**
  * @brief Proximetry Agent application task (non-blocking)
  *
- * Updates the alerts states in the Proximetry Agent Library,
- * performs the agent functionality,
+ * performs the Proximetry Agent functionality,
  *
- * It should be periodically invoked by the main task, at least once per sync message interval.
+ * This function must be periodically invoked by the application. It should be called at least once per periodic reporting interval.
  */
 void prox_agent_task(void);
 
@@ -55,29 +54,33 @@ void prox_agent_task(void);
  *
  * @param[in]:	init	1 - re-initialize the socket
  */
-int prox_get_socket(bool init);
+int prox_agent_get_socket(bool init);
 
 /**
  * @brief Proximetry Agent receive message
  *
- * This routine must by invoked by the system when a massage, for the Proximetry Agent, arrived.
+ * This routine must be invoked by the system when a massage from the Proximery Portal is received
  */
-void prox_recv_msg(uint8_t *buffer, size_t len);
+void prox_agent_recv_msg(uint8_t *buffer, size_t len);
 
 /**
  * @brief Proximetry Agent get time
  *
- * This routine is invokes by Proximetry Agent Library.
- * It must retrieves timestamp from the system.
+ * This function is called by the Proximetry Library.
+ * It must return a timestamp in miliseconds.
  *
  */
 extern uint64_t prox_callback__get_time_ms(void);
 
-/*
- * @brief 
+
+/** @name Proximetry core weak interface.
+ *   This interface may be defined and used to dynamically change the default configuration.
+ *   E.g. when the app configuraiton is stored on external memory.  
  */
+//@{
+void prox_agent_set_sync_interval(uint32_t time_interval);
 extern const char* prox_callback__get_device_id(void);
 extern const char* prox_callback__get_device_name(void);
 extern const char* prox_callback__get_activation_code(void);
-void prox_set_sync_interval(uint32_t time_interval);
+//@}
 #endif /* prox_agent_h */

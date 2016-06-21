@@ -21,7 +21,7 @@
 
 /**
  * @file prox_api.h
- * @brief Proximetry Cloud Agent Library - Application Interface
+ * @brief Proximetry Library - Application Interface
  */
 
 #ifndef __PROXAPI_H__
@@ -30,30 +30,29 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-// Proximetry Agent Library functions
+// Proximetry Library functions
 /**
  * @brief  Proximetry Library version
  * @return Proximetry Library version (string)
  */
 const char* prox_get_library_version(void);
 /**
- * @brief Check if Proximety Agent is connected to server
- * @return true if connected, false if not connected or uninitialised
+ * @brief Function returns state of the connection to the Proximetry Portal.
+ * @return true if authentication to the Proximetry Portal has been finished successfully.
  */
 bool prox_is_connected(void);
 
 /**
- * @brief Notify cloud server about configuration parameter update by device
+ * @brief Notify the Proximetry Portal that configuration has been changed
  *
- * This functions must be called when the parameters have been change locally,
- * and changes have to by synchronized with a cloud server.
+ * This functions must be called when the parameters have been changed locally to synchronize the changes with the Proximetry Portal.
  */
 void prox_conf_param_set(void);
 
 /**
  * @brief Write configuration parameter
  *
- * The function have to be used to write a configuration parameter value to the agent library.
+ * The functions below are used to write configuration parameter values to the Proximetry Library.
  */
 int prox_write_conf_param_bool(uint32_t id, bool value);
 int prox_write_conf_param_i8(uint32_t id, int8_t value);
@@ -68,7 +67,7 @@ int prox_write_conf_param_string(uint32_t id, const char *value);
 /**
  * @brief Read configuration parameter
  *
- * The function have to be used to read a configuration parameter value from the agent library.
+ * The functions below are used to read a configuration parameter value from the Proximetry Library.
  */
 int prox_read_conf_param_bool(uint32_t id, bool *value);
 int prox_read_conf_param_i8(uint32_t id, int8_t *value);
@@ -83,7 +82,7 @@ int prox_read_conf_param_string(uint32_t id, char *value);
 /**
  * @brief Write statistic 
  *
- * The function have to be used to write a statistic value to the agent library.
+ * The functions below are used to write statistic values to the Proximetry Library.
  */
 int prox_write_stat_bool(uint32_t id, bool value);
 int prox_write_stat_i8(uint32_t id, int8_t value);
@@ -96,9 +95,9 @@ int prox_write_stat_float(uint32_t id, float value);
 
 
 /**
- * @brief handle alerts
+ * @brief Handle alerts
  *
- * The function have to be used to handle alerts in the agent library.
+ * The functions below are used to set Alert states in the Proximetry Library.
  */
 void prox_set_alert(uint32_t id);
 void prox_clear_alert(uint32_t id);

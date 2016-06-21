@@ -92,7 +92,7 @@ int {{ get_setter_name() }}({{param_type_t}} {{get_name()|lower}});
 
 int {{ get_setter_name() }}({{param_type_t}} {{get_name()|lower}})
 {
-	prox_check_and_init_0();
+	prox_check_and_lib_init();
 	prox_write_conf_param_{{ abbreviate_int_type(param_type) }}({{ get_id_define() }}, {{get_name()|lower}});
 	prox_conf_param_set();
 	return 0;
@@ -109,7 +109,6 @@ prox_callback__set_{{ get_name()|lower }}
 {%- if middleware.configuration.prox_param_editable -%}
 {%- set param_type = middleware.configuration.prox_param_type -%}
 {%- set param_type_t = select_type_to_code_type(param_type) -%}
-
 extern void {{ get_callback_name() }}({{param_type_t}} {{get_name()|lower}});
 {%- endif -%}
 {%- endmacro %}
@@ -119,7 +118,7 @@ extern void {{ get_callback_name() }}({{param_type_t}} {{get_name()|lower}});
 {%- set param_type = middleware.configuration.prox_param_type -%}
 {%- set param_type_t = select_type_to_code_type(param_type) -%}
 
-#pragma weak {{get_callback_name()}} 
+#pragma weak {{get_callback_name()}}
 void {{ get_callback_name() }}({{param_type_t}} {{get_name()}})
 {
 	UNUSED({{get_name()}});
