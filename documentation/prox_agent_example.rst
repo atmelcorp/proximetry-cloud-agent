@@ -17,7 +17,7 @@ or
 Application
 -----------
 
-The Proximetry Cloud Agent Example shows how to integrate the Proximetry Cloud Agent Component into a new application. The example implements functions responsible for reporting statistic, configuration parameters and alerts to the Cloud Portal.
+The Proximetry Cloud Agent Example shows how to integrate the Proximetry Cloud Agent Component into a new application. The example implements functions responsible for reporting statistic, configuration parameters and alerts to the Proximetry Portal.
 The Proximetry Cloud Agent Example implements the following functionality:
 
 **configuration parameters**
@@ -39,7 +39,7 @@ The Proximetry Cloud Agent Example implements the following functionality:
 * alert 1     - I/O1 temperature alert,
 * alert 2     - SAMD21 SW0 alert, triggered when the SW0 button is pressed.
 
-The values of configuration parameters, statistics and alerts, which have to be reported to the Cloud Portal, must be handed over to the Proximetry Cloud Agent Component using the exposed API.
+The values of configuration parameters, statistics and alerts, which have to be reported to the Proximetry Portal, must be handed over to the Proximetry Cloud Agent Component using the exposed API.
 
 
 Dependencies

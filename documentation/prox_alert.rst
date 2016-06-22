@@ -2,24 +2,27 @@
 Proximetry Cloud Agent Component - Alerts
 =========================================
 
-Alerts are a Cloud Data Type utilized to signalize abnormal states to the Cloud Service,
+Alerts are used to monitor device health and critical parameters. Once a predefined alert threshold is crossed the Agent reports it to the Proximetry Portal.
+Each alert can either be in the CLEAR or in the SET state. An example alert can be Low Fuel notification in a car.
 
 API
 ---
-To set/clear alerts in the Cloud Service the
+To set/clear alerts in the Proximetry Portal use the
 
 `prox_alert_set/clear__<name>()`
 
-functions, from `prox_agent.h` API, must be used.
-The <name> is the name of alert defined during component configuration process.
+function, from `prox_agent.h` API.
+The <name> is an Alert name defined during the component configuration process.
 
-E.g if a name, of one of the alert defined for the Cloud Agent, is "temperature" then
-the API contains `prox_alert_set__temperature()` and  `prox_alert_clear__temperature()` functions to set and clear the alert respectively, in the Cloud Service.
+E.g. for a "temperature" Alert the Application API provides the following functions:
+
+* `prox_alert_set__temperature()` to send an Alert to the Proximetry Portal.
+* `prox_alert_clear__temperature()` to clear the Alert.
 
 
 Configuration
 -------------
 * name
-    Name of the alert which is used in definitions of Application API functions.
+    Name of an Alert.
 * ID
-    Defines identifiers for Configuration Parameter Proximetry Data Type. The Proximetry Data Type IDs must match definition in the Proximetry Portal.
+    Defines a unique identifier of an Alert. The ID must match the Alert definition in the Proximetry Portal.

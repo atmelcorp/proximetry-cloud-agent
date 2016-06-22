@@ -30,7 +30,7 @@
 /* This must be increment with every new release of the component */
 #define PROX_COMPONENT_VER_MAJOR     3
 #define PROX_COMPONENT_VER_MINOR     1
-#define PROX_COMPONENT_VER_REVISION  0
+#define PROX_COMPONENT_VER_REVISION  1
 #define PROX_COMPONENT_VER_INSTANCE  0     // if 0 then it is a pure copy of module without local changes.
                                      	   // Increment it when the module code is modified due to project specific requirements.
 
