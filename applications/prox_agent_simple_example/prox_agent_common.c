@@ -79,7 +79,7 @@ int16_t io1_read_illuminance_blk(void)
 {
 	uint16_t voltage;
 
-	adc_sync_read(&IO1_LIGHT_SEN_ADC_0, (uint8_t*)&voltage, 2);
+	adc_sync_read_channel(&IO1_LIGHT_SEN_ADC_0, 0, (uint8_t*)&voltage, 2);
 
 	// the following code converts analog read result to lux
 	// the actual formula is (3.3 - (voltage * 3.3) / 2^12) * 20.0
