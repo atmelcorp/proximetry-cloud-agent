@@ -31,6 +31,9 @@ middlewares:
       Delay instance: DELAY_0
       ExtIrq instance: WIFI_IRQ_0
       SPI instance: WIFI_SPI_0
+      CS Pin: WINC_SPI_CS_PIN
+      CE Pin: WINC_PIN_CHIP_ENABLE
+      RESET Pin: WINC_PIN_RESET
   Agent:
     user_label: PROX_AGENT
     configuration:
