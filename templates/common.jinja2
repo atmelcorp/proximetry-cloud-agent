@@ -1,0 +1,20 @@
+{% macro abbreviate_int_type(int_type) -%}
+{% if int_type.startswith('int') -%}
+i{{ int_type['int' | length:] }}
+{%- elif int_type.startswith('uint') -%}
+u{{ int_type['uint' | length:] }}
+{%- else -%}
+{{ int_type }}
+{%- endif %}
+{%- endmacro %}
+
+
+{% macro select_type_to_code_type(select_type) -%}
+{% if select_type == 'string' -%}
+    char*
+{%- elif 'int' in select_type -%}
+{{select_type}}_t
+{%- else -%}
+{{ select_type }}
+{%- endif %}
+{%- endmacro %}

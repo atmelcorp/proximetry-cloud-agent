@@ -5,35 +5,71 @@
 <description>This is the Proximetry Cloud Agent pack</description>
 <url>http://www.atmel.com</url>
 <releases>
+    <release version="3.1.1" date="2016-06-22">Documentation update</release>
+    <release version="3.1.0" date="2016-06-21">Refactoring and cleanups</release>
+    <release version="3.0.0" date="2016-06-13">Split Component into Cloud Agent and Cloud Data Types separated components</release>
+    <release version="2.0.2" date="2016-05-30">Platform independency,weak interface, 16 parameters.</release>
+    <release version="2.0.1" date="2016-05-16">Cleanups.</release>
+    <release version="2.0.0" date="2016-05-10">The Cloud Data Types configuration with the frontend form.</release>
     <release version="1.0.0">The first release.</release>
 </releases>
 
+
+<conditions>
+	<condition id="Proximetry support">
+		<accept Dfamily="SAMD21"/>
+		<accept Dfamily="SAML21"/>
+		<accept Dfamily="SAML22"/>
+	</condition>
+</conditions>
+
 <components>
-    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="1.0.0">
+    <component Cclass="Cloud" Cgroup="Agent"  Csub="Proximetry" Cversion="3.1.1" condition="Proximetry support">
         <description>This is the Proximetry Agent Component</description>
         <files>
-			<file category="include" name="prox_agent/agent_sdk-amp-c/"/>
-			<file category="library" name="prox_agent/agent_sdk-amp-c/libampagent.a"/>
-			<file category="header"  name="prox_agent/agent_sdk-amp-c/amp_agent.h"/>
+			<file category="library" name="prox_agent/lib/libprox.a"/>
+            <file category="header"  name="prox_agent/lib/prox.h"/>
+            <file category="header"  name="prox_agent/lib/prox_api.h"/>
+			<file category="include" name="prox_agent/core"/>
+			<file category="header"  name="prox_agent/core/prox_core.h"/>
+			<file category="source"  name="prox_agent/core/prox_core.c"/>
+			<file category="header"  name="prox_agent/helpers/prox_helpers.h"/>
+			<file category="source"  name="prox_agent/helpers/prox_helpers.c"/>
 			<file category="include" name="prox_agent/"/>
-			<file category="header" name="prox_agent/prox_agent_config.h"/>
+			<file category="header" name="prox_agent/prox_config.h"/>
+			<file category="header" name="prox_agent/prox_data.h"/>
             <file category="doc" name="documentation/prox_agent.rst"/>
         </files>
     </component>
+
+
+    <component Cclass="Cloud" Cgroup="Parameter"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+        <description>This is the Proximetry Agent Component</description>
+        <files>
+            <file category="doc" name="documentation/prox_param.rst"/>
+        </files>
+    </component>
+
+    <component Cclass="Cloud" Cgroup="Alert"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+        <description>This is the Proximetry Agent Component</description>
+        <files>
+            <file category="doc" name="documentation/prox_alert.rst"/>
+        </files>
+    </component>
+
+    <component Cclass="Cloud" Cgroup="Statistic"  Csub="Proximetry" Cversion="1.0.0" condition="Proximetry support">
+        <description>This is the Proximetry Agent Component</description>
+        <files>
+            <file category="doc" name="documentation/prox_stat.rst"/>
+        </files>
+    </component>
+
 
 	<component Cclass="Application" Cgroup="Atmel Cloud Proximetry Example" Cversion="0.0.1">
 		<description> Proximetry Cloud Agent Example </description>
 		<files>
 			<file category="source" name="applications/prox_agent_simple_example/main.c"/>
 			<file category="header" name="applications/prox_agent_simple_example/main.h" attr="config"/>
-			<file category="source" name="applications/prox_agent_simple_example/prox_agent.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/prox_agent.h"/>
-			<file category="source" name="applications/prox_agent_simple_example/prox_agent_amp.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/prox_agent_amp.h"/>
-			<file category="source" name="applications/prox_agent_simple_example/prox_agent_common.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/prox_agent_common.h"/>
-			<file category="source" name="applications/prox_agent_simple_example/socket_layer.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/socket_layer.h"/>
 			<file category="doc" 	name="documentation/prox_agent_example.rst"/>
 		</files>
 	</component>

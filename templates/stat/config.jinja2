@@ -1,0 +1,26 @@
+{% import 'templates/stat/code.jinja2' as code with context %}
+
+{# This really has no use if we rely on user_label #}
+//   <s.100> Name
+//   <i> A name which define the statistic in the code
+//   <id> prox_stat_name
+#define {{ code.get_name_define() }}  "stat"
+
+//   <o> Type
+//                        <1=> bool
+//                        <2=> int8
+//                        <3=> int16
+//                        <8=> int32
+//                        <5=> uint8
+//                        <6=> uint16
+//                        <7=> uint32
+//                        <8=> float
+//   <i> statistic type
+//   <i> default: bool
+//   <id> prox_stat_type
+#define {{ code.get_type_define() }}  1
+
+//   <o> ID <1-65535>
+//   <i> An id is crucial and must be consistent with an id on the Proximetry Portal
+//   <id> prox_stat_id
+#define {{ code.get_id_define() }}  1

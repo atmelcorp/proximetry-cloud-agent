@@ -13,7 +13,7 @@
 	// <i> The password used to connect to WiFi network
 	// <id> def_password
 #ifndef DEF_PASSWORD
-#   define DEF_PASSWORD    "Password"
+#   define DEF_PASSWORD    "PASSWD"
 #endif
 
 // <o> Security type

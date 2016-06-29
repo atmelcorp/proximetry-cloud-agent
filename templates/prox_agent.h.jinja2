@@ -1,0 +1,102 @@
+
+
+/*******************************************************************************
+*
+* Copyright (C) 2016 Proximetry Inc. All rights reserved.
+* Authors: Proximetry (www.proximetry.io)
+*
+* THIS SOFTWARE IS PROVIDED BY PROXIMETRY "AS IS" AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
+* EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL PROXIMETRY BE LIABLE
+* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+* OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+* POSSIBILITY OF SUCH DAMAGE.
+*
+******************************************************************************/
+
+/**
+ * @file prox_agent.h
+ * @brief Proximetry Agent - Application Interface
+ *
+ * */
+
+#ifndef PROX_DATA_DEF_H
+#define PROX_DATA_DEF_H
+
+{# Agent is defined first in cfgmap and should therefore be the first middleware in list#}
+{% set agent = middlewares | first %}
+
+{% set alerts = agent.get_reverse_dependency('Alerts') or [] %}
+{% set params = agent.get_reverse_dependency('Parameters') or [] %}
+{% set params_editable = params | selectattr('configuration.prox_param_editable') %}
+{% set stats = agent.get_reverse_dependency('Statistics') or [] %}
+
+{% set agent = middlewares | first %}
+#define PROX_DEVICE_MODEL   {{ agent.tpl.device_model_id() }}
+#define PROX_MODEL_VER      {{ agent.tpl.device_model_ver() }}
+#define PROX_INSTANCE_VER   0    // Use this number to indicate version of your application
+
+/**
+ * @brief Maximum lenght for string Configuration Parameters
+ */
+#define PROX_CONF_PARAM_STR_LEN 100
+
+
+/** @name
+ * Configuration Parameters setters.
+ * Use functions below to push Configuration Parameter values to the Proximetry Portal
+ */
+//@{
+{%- for param in params %}
+{{ param.tpl.declare_setter() }}
+{%- endfor %}
+//@}
+
+/** @name
+ *  Alerts setters
+ *  Use functions below to set or clear Alerts at Proximetry Portal
+ */
+//@{
+{%- for alert in alerts %}
+{{ alert.tpl.declare_setters() }}
+{%- endfor %}
+//@}
+
+/** @name
+ *  Configuration Parameter change callbacks
+ *  The functions below are called when a configuration change request is receieved from the Proximetry Portal
+ */
+//@{
+{%- for param in params %}
+{{ param.tpl.declare_callback() }}
+{%- endfor %}
+//@}
+
+/** @name
+ *   Statistics callbacks
+ *   The functions below are called on every periodic reporting interval to get Statsitics data
+ */
+//@{
+{%- for stat in stats %}
+{{ stat.tpl.declare_callback() }}
+{%- endfor %}
+//@}
+
+/**
+ * @brief Function returns state of the connection to the Proximetry Portal.
+ * @return true if authentication to the Proximetry Portal has been finished successfully.
+ */
+bool prox_is_connected(void);
+
+/**
+ * @brief
+ * @return Agent version string
+ */
+char *prox_get_agent_version(void);
+
+#endif

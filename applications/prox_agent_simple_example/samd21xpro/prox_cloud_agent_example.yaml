@@ -5,7 +5,7 @@ board:
   device: SAMD21J18A-AU
 details: null
 application:
-  definition: 'Proximetry:Proximetry_Agent:1.0.0::Application:Atmel_Cloud_Proximetry_Example:'
+  definition: 'Proximetry:Proximetry_Agent:3.1.1::Application:Atmel_Cloud_Proximetry_Example:'
   configuration:
     def_password: Password
     def_sec_type: WPA/WPA2 personal(PSK)
@@ -20,8 +20,8 @@ middlewares:
     api: Sensor:Temperature-Sensor:AT30TSE75X
     dependencies:
       I2C instance: I2C
-  WIFI_0:
-    user_label: WIFI_0
+  WIFI:
+    user_label: WIFI
     configuration:
       wifi_mgmt_enable: false
     definition: Atmel:WIFI_WINC1500:1.0.0::WINC1500_Driver
@@ -34,15 +34,130 @@ middlewares:
       CS Pin: WINC_SPI_CS_PIN
       CE Pin: WINC_PIN_CHIP_ENABLE
       RESET Pin: WINC_PIN_RESET
-  CLOUD_AGENT_0:
-    user_label: CLOUD_AGENT_0
+  Agent:
+    user_label: PROX_AGENT
     configuration:
       prox_activation_code: PUT YOUR ACTIVATION CODE HERE
-      prox_device_name: SAMD21_PROX_EXAMPLE
-    definition: Proximetry:Proximetry_Agent:1.0.0::Proximetry_Cloud_Agent
+      prox_device_model_id: 0x80168
+      prox_device_model_version: 4
+      prox_device_name: SAMD21_STARTNAME
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Agent
     functionality: Cloud_Agent
     api: Cloud:Agent:Proximetry
-    dependencies: {}
+    dependencies:
+      WIFI: WIFI
+  param1:
+    user_label: PROX_PARAM_IP
+    configuration:
+      prox_param_editable: false
+      prox_param_id: 1001
+      prox_param_name: ip
+      prox_param_type: string
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Parameter
+    functionality: Cloud_Data
+    api: Cloud:Parameter:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  param2:
+    user_label: PROX_PARAM_MAC
+    configuration:
+      prox_param_editable: false
+      prox_param_id: 1002
+      prox_param_name: mac
+      prox_param_type: string
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Parameter
+    functionality: Cloud_Data
+    api: Cloud:Parameter:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  param3:
+    user_label: PROX_PARAM_LED_ONOFF
+    configuration:
+      prox_param_editable: true
+      prox_param_id: 1003
+      prox_param_name: led_onoff
+      prox_param_type: int32
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Parameter
+    functionality: Cloud_Data
+    api: Cloud:Parameter:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  param4:
+    user_label: PROX_PARAM_LED_FREQ
+    configuration:
+      prox_param_editable: true
+      prox_param_id: 1004
+      prox_param_name: led_freq
+      prox_param_type: int32
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Parameter
+    functionality: Cloud_Data
+    api: Cloud:Parameter:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  alert1:
+    user_label: PROX_ALERT_IO1_TEMP
+    configuration:
+      prox_alert_id: 11
+      prox_alert_name: io1_temp
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Alert
+    functionality: Cloud_Data
+    api: Cloud:Alert:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  alert2:
+    user_label: PROX_ALERT_SW0
+    configuration:
+      prox_alert_id: 22
+      prox_alert_name: sw0
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Alert
+    functionality: Cloud_Data
+    api: Cloud:Alert:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  stat1:
+    user_label: PROX_STAT_IO1_ILUM
+    configuration:
+      prox_stat_id: 101
+      prox_stat_name: io1_ilum
+      prox_stat_type: int32
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Statistic
+    functionality: Cloud_Data
+    api: Cloud:Statistic:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  stat2:
+    user_label: PROX_STAT_SW0
+    configuration:
+      prox_stat_id: 102
+      prox_stat_name: sw0
+      prox_stat_type: int32
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Statistic
+    functionality: Cloud_Data
+    api: Cloud:Statistic:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  stat3:
+    user_label: PROX_STAT_IO1_TEMP
+    configuration:
+      prox_stat_id: 103
+      prox_stat_name: io1_temp
+      prox_stat_type: float
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Statistic
+    functionality: Cloud_Data
+    api: Cloud:Statistic:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
+  stat4:
+    user_label: PROX_STAT_RSSI
+    configuration:
+      prox_stat_id: 104
+      prox_stat_name: rssi
+      prox_stat_type: float
+    definition: Proximetry:Proximetry_Agent:3.1.1::Proximetry_Cloud_Statistic
+    functionality: Cloud_Data
+    api: Cloud:Statistic:Proximetry
+    dependencies:
+      Agent: PROX_AGENT
   STDIO_REDIRECT_0:
     user_label: STDIO_REDIRECT_0
     configuration: {}
@@ -291,7 +406,7 @@ drivers:
       eic_arch_wakeupen8: false
       eic_arch_wakeupen9: false
     optional_signals:
-    - pad: PB04
+    - pad:  PB04
       mode: Enabled
       configuration: null
       definition: Atmel:SAMD21_Drivers:0.0.1::SAMD21J18A-AU::optional_signal_definition::EIC.EXTINT.4

@@ -1,0 +1,43 @@
+{% macro get_name() -%}
+    {{middleware.configuration.prox_alert_name}} 
+{%- endmacro %}
+
+
+{% macro get_id_define() -%}
+{#-  PROX_ALERT_ID__{{ middleware.user_label|upper }}  -#}
+{{ middleware.user_label|upper }}_ID
+{%- endmacro %}
+
+{% macro get_name_define() -%}
+{#-  PROX_ALERT_NAME__{{  middleware.user_label|upper }}  -#}
+{{  middleware.user_label|upper }}_NAME
+{%- endmacro %}
+
+{% macro define_id() -%}
+#define {{ get_id_define() }}  {{ middleware.configuration.prox_alert_id }}
+{%- endmacro %}
+
+{% macro define_alert() -%}
+PROX_ALERT_DEF({{ get_id_define() }})
+{%- endmacro %}
+
+{% macro declare_setters() -%}
+void prox_alert_set__{{ get_name()|lower }}(void);
+void prox_alert_clear__{{ get_name()|lower }}(void);
+{%- endmacro %}
+
+{% macro define_setters_set() -%}
+void prox_alert_set__{{ get_name()|lower }}(void)
+{
+    prox_clear_alert({{get_id_define()}});
+}
+{% endmacro %}
+
+{% macro define_setters_clear() -%}
+void prox_alert_clear__{{ get_name()|lower }}(void)
+{
+    prox_set_alert({{get_id_define()}});
+}
+{% endmacro %}
+
+
