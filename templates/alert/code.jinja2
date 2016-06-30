@@ -1,5 +1,7 @@
+{% from 'templates/common.jinja2' import cfg %}
+
 {% macro get_name() -%}
-    {{middleware.configuration.prox_alert_name}} 
+    {{cfg('prox_alert_name', 'alert')}}
 {%- endmacro %}
 
 
@@ -14,7 +16,7 @@
 {%- endmacro %}
 
 {% macro define_id() -%}
-#define {{ get_id_define() }}  {{ middleware.configuration.prox_alert_id }}
+#define {{ get_id_define() }}  {{ cfg('prox_alert_id', '1') }}
 {%- endmacro %}
 
 {% macro define_alert() -%}

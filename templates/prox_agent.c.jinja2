@@ -1,5 +1,6 @@
 {% from 'templates/common.jinja2' import abbreviate_int_type %}
 {% from 'templates/common.jinja2' import select_type_to_code_type %}
+{% from 'templates/common.jinja2' import cfg %}
 
 /*******************************************************************************
 *
@@ -46,9 +47,15 @@
 {% set stats = agent.get_reverse_dependency('Statistics') or [] %}
 
 {# Get helpful subsets  #}
+{% if params | length == 1 and params[0].configuration | length == 0  %}
+{% set params_editable = [] %}
+{% set params_string = [] %}
+{% set params_string_editable =[] %}
+{% else %}
 {% set params_editable = params | selectattr('configuration.prox_param_editable') | list %}
 {% set params_string = params | selectattr('configuration.prox_param_type', 'equalto', 'string') | list %}
 {% set params_string_editable = params_string | selectattr('configuration.prox_param_editable') | list %}
+{% endif %}
 
 {% set num_params_editable= params_editable | length %}
 {% set num_params_string = params_string | length %}
