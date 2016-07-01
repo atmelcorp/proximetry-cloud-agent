@@ -69,7 +69,7 @@
 		<description> Proximetry Cloud Agent Example </description>
 		<files>
 			<file category="source" name="applications/prox_agent_simple_example/main.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/main.h" attr="config"/>
+			<file category="header" name="applications/prox_agent_simple_example/main.h"/>
 			<file category="doc" 	name="documentation/prox_agent_example.rst"/>
 		</files>
 	</component>
