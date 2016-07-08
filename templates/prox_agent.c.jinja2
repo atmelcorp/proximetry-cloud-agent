@@ -26,11 +26,11 @@
  * @brief Proximetry Agent - Application
  */
 
-#include "helpers/prox_helpers.h"
-#include "lib/prox.h"
+#include <helpers/prox_helpers.h>
+#include <lib/prox.h>
 #include "prox_agent.h"
-#include "prox_config.h"
-#include "prox_data.h"
+#include <prox_config.h>
+#include <prox_data.h>
 
 {# Agent is defined first in cfgmap and should therefore be the first middleware in list#}
 #define PROX_AGENT_VER     TOSTR(PROX_DEVICE_MODEL)"."TOSTR(PROX_MODEL_VER)"-"TOSTR(PROX_INSTANCE_VER)
