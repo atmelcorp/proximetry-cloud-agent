@@ -18,3 +18,5 @@ u{{ int_type['uint' | length:] }}
 {{ select_type }}
 {%- endif %}
 {%- endmacro %}
+
+{% macro cfg(name, tag_none) %}{{middleware.configuration[name] if name in middleware.configuration else tag_none}}{% endmacro %}

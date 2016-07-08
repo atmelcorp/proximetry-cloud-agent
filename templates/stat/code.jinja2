@@ -1,9 +1,10 @@
 {% from 'templates/common.jinja2' import select_type_to_code_type %}
 {% from 'templates/common.jinja2' import abbreviate_int_type %}
+{% from 'templates/common.jinja2' import cfg %}
 
 {% macro get_name() -%}
  {#-  {{     middleware.user_label}}   -#}
-{{ middleware.configuration.prox_stat_name }}
+{{ cfg('prox_stat_name', 'stat') }}
 {%- endmacro %}
 
 {% macro get_id_define() -%}
@@ -26,7 +27,7 @@
 {%- endmacro %}
 
 {% macro define_stat() -%}
-{%- set stat_type = middleware.configuration.prox_stat_type -%}
+{%- set stat_type = cfg('prox_stat_type', 'bool') -%}
 PROX_{{ stat_type | upper }}_STAT_DEF({{ get_id_define() }})
 {%- endmacro %}
 
@@ -36,13 +37,13 @@ stat_{{get_name()|lower}}
 {%- endmacro %}
 
 {% macro define_local_variable() -%}
-{%- set stat_type = middleware.configuration.prox_stat_type -%}
+{%- set stat_type = cfg('prox_stat_type', 'bool') -%}
 {%- set stat_type_t = select_type_to_code_type(stat_type) -%}
     {{stat_type_t}} {{get_local_variable_name() }}
 {%- endmacro %}
 
 {% macro get_stat_to_local_variable() -%}
-{%- set stat_type = middleware.configuration.prox_stat_type -%}
+{%- set stat_type = cfg('prox_stat_type', 'bool') -%}
 {%- set stat_type_t = select_type_to_code_type(stat_type) -%}
     {{stat_type_t}} {{get_local_variable_name() }} =  {{get_callback_name()}}();
 {%- endmacro %}
@@ -52,14 +53,14 @@ prox_callback__get_{{ get_name()|lower }}
 {%- endmacro %}
 
 {% macro declare_callback() -%}
-{%- set stat_type = middleware.configuration.prox_stat_type -%}
+{%- set stat_type = cfg('prox_stat_type', 'bool') -%}
 {%- set stat_type_t = select_type_to_code_type(stat_type) -%}
 
 extern {{stat_type_t}} {{ get_callback_name() }}(void);
 {%- endmacro %}
 
 {% macro define_callback() -%}
-{%- set stat_type = middleware.configuration.prox_stat_type -%}
+{%- set stat_type = cfg('prox_stat_type', 'bool') -%}
 {% if 'int' in stat_type -%}
 	{%- set stat_type = stat_type+'_t' -%}
 {%- endif -%}
@@ -73,12 +74,12 @@ extern {{stat_type_t}} {{ get_callback_name() }}(void);
 
 {####  Misk  ####}
 {%- macro get_stat() -%}
-{%- set stat_type = middleware.configuration.prox_stat_type -%}
+{%- set stat_type = cfg('prox_stat_type', 'bool') -%}
     prox_write_stat_{{abbreviate_int_type(stat_type)}}({{ get_id_define() }}, {{ get_local_variable_name() }});
 {%- endmacro -%}
 
 {% macro log_stat() -%}
-{%- set stat_type = middleware.configuration.prox_stat_type -%}
+{%- set stat_type = cfg('prox_stat_type', 'bool') -%}
 
 {%- if stat_type == 'float' -%}
     PROX_LOG("{{ get_id_define() }}:"FLOAT_TO_INT_POINT_INT_FORMAT EOL, FLOAT_TO_INT_POINT_INT_VALUES({{ get_local_variable_name() }}));

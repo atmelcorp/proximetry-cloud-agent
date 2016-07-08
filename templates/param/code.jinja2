@@ -1,11 +1,12 @@
 {% from 'templates/common.jinja2' import abbreviate_int_type %}
 {% from 'templates/common.jinja2' import select_type_to_code_type %}
+{% from 'templates/common.jinja2' import cfg %}
 
 {#### Configuration related macros ####}
 
 {#### Code related macros ####}
 {% macro get_name() -%}
-    {{ middleware.configuration.prox_param_name }}
+    {{ cfg('prox_param_name', 'param') }}
 {%- endmacro %}
 
 {% macro get_id_define() -%}
@@ -35,7 +36,7 @@
 
 
 {% macro get_type() -%}
-{{middleware.configuration.prox_param_type}}
+{{cfg('prox_param_type', 'bool')}}
 {%- endmacro %}
 
 {% macro define_id() -%}
@@ -59,7 +60,7 @@ char {{  get_string_name() }}[PROX_CONF_PARAM_STR_LEN]
 
 
 {% macro define_param(string_struct_name) -%}
-{%- set param_type = middleware.configuration.prox_param_type -%}
+{%- set param_type = cfg('prox_param_type', 'bool') -%}
 {% if param_type == 'string' -%}
 PROX_STRING_CONF_PARAM_DEF({{ get_id_define() }}, {{ string_struct_name }}.{{ get_string_name() }})
 {%- else -%}
@@ -69,7 +70,7 @@ PROX_{{ param_type | upper }}_CONF_PARAM_DEF({{ get_id_define() }})
 
 
 {% macro define_local_variable() -%}
-{%- set param_type = middleware.configuration.prox_param_type -%}
+{%- set param_type = cfg('prox_param_type', 'bool') -%}
     {{select_type_to_code_type(param_type)}} {{get_local_variable_name() }}
 {%- endmacro %}
 
@@ -80,14 +81,14 @@ prox_conf_param_push__{{ get_name()|lower }}
 {%- endmacro %}
 
 {% macro declare_setter() -%}
-{%- set param_type = middleware.configuration.prox_param_type -%}
+{%- set param_type = cfg('prox_param_type', 'bool') -%}
 {%- set param_type_t = select_type_to_code_type(param_type) -%}
 
 int {{ get_setter_name() }}({{param_type_t}} {{get_name()|lower}});
 {%- endmacro -%}
 
 {% macro define_setter() -%}
-{%- set param_type = middleware.configuration.prox_param_type -%}
+{%- set param_type = cfg('prox_param_type', 'bool') -%}
 {%- set param_type_t = select_type_to_code_type(param_type) -%}
 
 int {{ get_setter_name() }}({{param_type_t}} {{get_name()|lower}})
@@ -106,16 +107,16 @@ prox_callback__set_{{ get_name()|lower }}
 {%- endmacro %}
 
 {% macro declare_callback() -%}
-{%- if middleware.configuration.prox_param_editable -%}
-{%- set param_type = middleware.configuration.prox_param_type -%}
+{%- if cfg('prox_param_editable', 'True')|string == "True" -%}
+{%- set param_type = cfg('prox_param_type', 'bool') -%}
 {%- set param_type_t = select_type_to_code_type(param_type) -%}
 extern void {{ get_callback_name() }}({{param_type_t}} {{get_name()|lower}});
 {%- endif -%}
 {%- endmacro %}
 
 {% macro define_callback() -%}
-{% if middleware.configuration.prox_param_editable -%}
-{%- set param_type = middleware.configuration.prox_param_type -%}
+{% if cfg('prox_param_editable', 'True')|string == "True" -%}
+{%- set param_type = cfg('prox_param_type', 'bool') -%}
 {%- set param_type_t = select_type_to_code_type(param_type) -%}
 
 #pragma weak {{get_callback_name()}}
@@ -129,7 +130,7 @@ void {{ get_callback_name() }}({{param_type_t}} {{get_name()}})
 
 {####  Misk  ####}
 {% macro read_and_log(tmp_string_name) -%}
-{%- set param_type = middleware.configuration.prox_param_type -%}
+{%- set param_type = cfg('prox_param_type', 'bool') -%}
 
 {%- if param_type == 'string' %}
     {{ get_local_variable_name() }} = {{ tmp_string_name }};

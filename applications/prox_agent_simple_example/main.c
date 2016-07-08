@@ -1,20 +1,20 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "atmel_start.h"
-#include "winc1500_main.h"
-#include "stdio_start.h"
+#include <atmel_start.h>
+#include <winc1500_main.h>
+#include <stdio_start.h>
 
-#include "socket/include/socket.h"
+#include <socket/include/socket.h>
 
-#include "driver/include/m2m_wifi.h"
-#include "at30tse75x.h"
+#include <driver/include/m2m_wifi.h>
+#include <at30tse75x.h>
 #include "main.h"
 #include <temperature_sensor_main.h>
 
-#include "prox_core.h"
-#include "prox_agent.h"
-#include "helpers/prox_helpers.h"
+#include <core/prox_core.h>
+#include <prox_agent.h>
+#include <helpers/prox_helpers.h>
 
 #define CONNECTION_TIMEOUT   	10000  						//[ms] - timeout for wifi [re]connection
 

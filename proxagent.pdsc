@@ -30,13 +30,12 @@
 			<file category="library" name="prox_agent/lib/libprox.a"/>
             <file category="header"  name="prox_agent/lib/prox.h"/>
             <file category="header"  name="prox_agent/lib/prox_api.h"/>
-			<file category="include" name="prox_agent/core"/>
 			<file category="header"  name="prox_agent/core/prox_core.h"/>
 			<file category="source"  name="prox_agent/core/prox_core.c"/>
 			<file category="header"  name="prox_agent/helpers/prox_helpers.h"/>
 			<file category="source"  name="prox_agent/helpers/prox_helpers.c"/>
 			<file category="include" name="prox_agent/"/>
-			<file category="header" name="prox_agent/prox_config.h"/>
+			<file category="header" name="config/prox_config.h"/>
 			<file category="header" name="prox_agent/prox_data.h"/>
             <file category="doc" name="documentation/prox_agent.rst"/>
         </files>
@@ -69,7 +68,7 @@
 		<description> Proximetry Cloud Agent Example </description>
 		<files>
 			<file category="source" name="applications/prox_agent_simple_example/main.c"/>
-			<file category="header" name="applications/prox_agent_simple_example/main.h" attr="config"/>
+			<file category="header" name="applications/prox_agent_simple_example/main.h"/>
 			<file category="doc" 	name="documentation/prox_agent_example.rst"/>
 		</files>
 	</component>
