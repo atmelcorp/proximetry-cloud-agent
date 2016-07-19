@@ -3,7 +3,7 @@
     <middleware name="Proximetry Cloud Agent" singleton="true">
         <description>Prox Cloud Agent Component</description>
 		<user-guide path="documentation/prox_agent.rst"/>
-		<config-template path="templates/init/prox_config.h" target-path="prox_agent/prox_config.h"/>
+		<config-template path="templates/init/prox_config.h.jinja2" target-path="config/prox_config.h"/>
         <code-template path="templates/prox_agent_code.jinja2"/>
 		<required-component name="Cloud:Agent:Proximetry"/>
 		<!-- <required-component name="WIFI:WINC:WINC1500"/> -->
@@ -16,7 +16,7 @@
     <middleware name="Proximetry Cloud Parameter">
         <description>Prox Cloud Parameter Component</description>
 		<user-guide path="documentation/prox_param.rst"/>
-		<config-template path="templates/param/config.jinja2" target-path="prox_agent/prox_config.h"/>
+		<config-template path="templates/param/config.jinja2" target-path="config/prox_config.h"/>
         <code-template path="templates/param/code.jinja2"/>
 		<required-component name="Cloud:Parameter:Proximetry"/>
 		<!-- <required-component name="WIFI:WINC:WINC1500"/> -->
@@ -29,7 +29,7 @@
     <middleware name="Proximetry Cloud Statistic">
         <description>Prox Cloud Statistic Component</description>
 		<user-guide path="documentation/prox_stat.rst"/>
-		<config-template path="templates/stat/config.jinja2" target-path="prox_agent/prox_config.h"/>
+		<config-template path="templates/stat/config.jinja2" target-path="config/prox_config.h"/>
         <code-template path="templates/stat/code.jinja2"/>
 		<required-component name="Cloud:Statistic:Proximetry"/>
 		<!-- <required-component name="WIFI:WINC:WINC1500"/> -->
@@ -42,7 +42,7 @@
     <middleware name="Proximetry Cloud Alert">
         <description>Prox Cloud Alert Component</description>
 		<user-guide path="documentation/prox_alert.rst"/>
-		<config-template path="templates/alert/config.jinja2" target-path="prox_agent/prox_config.h"/>
+		<config-template path="templates/alert/config.jinja2" target-path="config/prox_config.h"/>
         <code-template path="templates/alert/code.jinja2"/>
 		<required-component name="Cloud:Alert:Proximetry"/>
 		<!-- <required-component name="WIFI:WINC:WINC1500"/> -->

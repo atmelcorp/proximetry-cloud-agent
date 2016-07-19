@@ -24,16 +24,16 @@
  * @brief Proximetry Agent - Platform specific code
  * */
 
-#include "../helpers/prox_helpers.h"
-#include "../prox_config.h"
-#include "../lib/prox.h"
-#include "../prox_data.h"
+#include <helpers/prox_helpers.h>
+#include <prox_config.h>
+#include <lib/prox.h>
+#include <prox_data.h>
 #include "prox_core.h"
-#include "../prox_agent.h"
+#include <prox_agent.h>
 
-#include "atmel_start.h"
-#include "driver/include/m2m_wifi.h"
-#include "socket/include/socket.h"
+#include <atmel_start.h>
+#include <driver/include/m2m_wifi.h>
+#include <socket/include/socket.h>
 
 static int prox_sock = -1;
 static struct sockaddr_in remote;

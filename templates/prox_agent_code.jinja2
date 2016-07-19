@@ -1,9 +1,11 @@
+{% from 'templates/common.jinja2' import cfg %}
+
 {% macro prox_instance() %}{{middleware.user_label}}{% endmacro %}
 {% macro our(thing) %}{{ middleware.user_label | upper }}_{{ thing }}{% endmacro %}
 {% macro desc_ptr() %}{{ our('desc_ptr') }}{% endmacro %}
 
-{% macro device_model_id() %}{{ middleware.configuration['prox_device_model_id'] }}{% endmacro %}
-{% macro device_model_ver() %}{{ middleware.configuration['prox_device_model_version'] }}{% endmacro %}
+{% macro device_model_id() %}{{ cfg('prox_device_model_id', 2|string) }}{% endmacro %}
+{% macro device_model_ver() %}{{ cfg('prox_device_model_version', 2|string) }}{% endmacro %}
 
 {% macro param_en(x) %}{{ middleware.configuration['prox_param_'+x|string+'_en'] }}{% endmacro %}
 {% macro param_name(x) %}{{ middleware.configuration['prox_param_'+x|string+'_name']|lower() }}{% endmacro %}
