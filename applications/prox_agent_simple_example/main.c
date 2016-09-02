@@ -539,8 +539,7 @@ int main(void)
 {
 	system_init();
 
-	STDIO_REDIRECT_0_init();
-    TIMER_0_init();
+	TIMER_0_init();
 
 	temperature_sensors_init();
 	adc_sync_enable_channel(&IO1_LIGHT_SEN_ADC_0, 0);
