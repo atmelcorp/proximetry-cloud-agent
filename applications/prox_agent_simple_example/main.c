@@ -537,7 +537,7 @@ static void prox_alerts_service(void)
  */
 int main(void)
 {
-	system_init();
+	atmel_start_init();
 
 	TIMER_0_init();
 
