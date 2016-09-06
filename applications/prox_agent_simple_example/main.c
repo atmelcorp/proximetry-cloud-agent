@@ -537,12 +537,10 @@ static void prox_alerts_service(void)
  */
 int main(void)
 {
-	system_init();
+	atmel_start_init();
 
-	STDIO_REDIRECT_0_init();
-    TIMER_0_init();
+	TIMER_0_init();
 
-	temperature_sensors_init();
 	adc_sync_enable_channel(&IO1_LIGHT_SEN_ADC_0, 0);
 
 	printf(STRING_HEADER);
