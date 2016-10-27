@@ -4,7 +4,7 @@ Proximetry Cloud Agent Component - Params
 
 Configuration parameters are user-defined settings that controls various aspects of the application behavior.
 Configuration Parameters can be controlled from the Proximetry Portal Web UI.  
-An example configuration parameter can be “Light Control” allowing to turn on or off a light bulb.
+An example configuration parameter can be "Light Control" allowing to turn on or off a light bulb.
 
 
 API
@@ -17,8 +17,8 @@ function from `prox_agent.h` API.
 The <name> is a Configuration Parameter name defined during the component configuration process.
 
 Use the `prox_conf_param_push__<name>()` function to:
-•	initialize Configuration Parameters in the Proximetry Portal at the application startup 
-•	notify the Proximetry Portal about any local configuration changes  (e.g. when a new IP address is obtained from DHCP)
+*	initialize Configuration Parameters in the Proximetry Portal at the application startup 
+*	notify the Proximetry Portal about any local configuration changes  (e.g. when a new IP address is obtained from DHCP)
 
 To handle a Configuration Parameter change request received from the Proximetry Portal implement the following callback function:
 

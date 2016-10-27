@@ -21,7 +21,7 @@ Proximetry Portal differentiates three types of information:
 
 **Alerts** are used to monitor device health and critical parameters. Once a predefined alert threshold is crossed the Agent reports it to the Proximetry Portal. Each alert can either be in the CLEAR or in the SET state. An example alert can be Low Fuel notification in a car.
 
-**Configuration parameters** are user-defined settings that controls various aspects of application behavior.  An example configuration parameter can be “Light Control” allowing to turn on or off a light bulb.
+**Configuration parameters** are user-defined settings that controls various aspects of application behavior.  An example configuration parameter can be "Light Control" allowing to turn on or off a light bulb.
 Supported types of particular information are defined below.
 
 Statistics:  *bool, int8, int16, int32, uint8, uin16, uin32, float, string*
@@ -80,7 +80,7 @@ To get Cloud Agent working the following configuration must be set:
     Device model id and Device model version uniquely identifies Device Model and its
     capabilities (Configuration Parameters, Statistics and Alerts) defined in the Proximetry Portal. The provided Device Model definition must exist on the Proximetry Porta.
 * Activation code: PROX_ACTIVATION_CODE
-    Device activation code is a 74-char length alphanumeric string assigned to your Proximetry Portal account. The device activation code can be found under “Provisioning->Device Activation Codes” in the Proximetry Portal main menu.
+    Device activation code is a 74-char length alphanumeric string assigned to your Proximetry Portal account. The device activation code can be found under "Provisioning->Device Activation Codes" in the Proximetry Portal main menu.
 * Device name: PROX_DEVICE_NAME
     An initial device name string that will be reported to the Proximetry Portal for device identification. This string can be used in the search field to quickly find a device in the Proximetry Portal.
     Note that the device name can be modified by the Operator from the Proximetry Portal Web UI be the name.
