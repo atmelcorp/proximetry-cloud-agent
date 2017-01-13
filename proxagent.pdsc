@@ -84,7 +84,7 @@
 				</project>
 				<attributes>
 					<component Cclass="Application" Cgroup="Atmel Cloud Proximetry Example"/>
-					<category>Getting started</category>
+					<category>Wireless</category>
 				</attributes>
 		</example>
 
@@ -97,7 +97,7 @@
 				</project>
 				<attributes>
 					<component Cclass="Application" Cgroup="Atmel Cloud Proximetry Example"/>
-					<category>Getting started</category>
+					<category>Wireless</category>
 				</attributes>
 		</example>
 	</examples>
